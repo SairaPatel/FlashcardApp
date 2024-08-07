@@ -7,7 +7,8 @@ public class App extends JFrame{
     public static void main(String[] args) throws Exception {
         // UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         
-        new EditCardPage();
+        // new EditCardPage();
+        new HomePage();
         
     }
 }
