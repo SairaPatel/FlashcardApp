@@ -8,7 +8,7 @@ public class App extends JFrame{
         // UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         
         // new EditCardPage();
-        new HomePage();
+        new LearnPage();
         
     }
 }

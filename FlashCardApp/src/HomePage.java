@@ -56,35 +56,53 @@ public class HomePage extends JFrame{
         keywordInputGBC.gridwidth = 2;
         add(keywordInput, keywordInputGBC);
 
+
+        // apply button
+        JButton applyButton = new JButton("Apply Filters");        
+
+        GridBagConstraints applyButtonGBC = UIController.getGBC(0, 4, 1,0);
+        add(applyButton, applyButtonGBC);
+
+
         // clear button
         JButton clearButton = new JButton("Clear Filters");        
 
-        GridBagConstraints clearButtonGBC = UIController.getGBC(0, 4, 1,0);
-        clearButtonGBC.gridwidth = 2;
+        GridBagConstraints clearButtonGBC = UIController.getGBC(1, 4, 1,0);
         add(clearButton, clearButtonGBC);
 
 
         // table
-        String[][] data = {
-            {"Web Dev", "HTML basics"},
-            {"Web Dev", "Usability"},
-            {"Web Dev", "JQuery"},
-            {"Programming", "Recursion"},
-            {"Programming", "Generics"},
-            {"Programming", "Inheritance"},
-            {"Programming", "Interfaces"},
-            {"Architecture", "Logic Gates"},
-            {"Architecture", "Sequential logic"},
-            {"Architecture", "IO"},
-            {"Architecture", "FE Cycle"}
+        String[] data = {
+            "Web Dev: Usability",
+            "Web Dev: HTML basics",
+            "Web Dev: JQuery",
+            "Programming: Recursion",
+            "Programming: Generics",
+            "Programming: Inheritance",
+            "Programming: Interfaces",
+            "Architecture: Logic Gates",
+            "Architecture: Sequential logic",
+            "Architecture: IO",
+            "Architecture: FE Cycle"
         };
-        String[] columnNames = {"Set", "Card Title"};
-        JTable table = new JTable(data, columnNames);
-        
+        // String[] columnNames = {"Set", "Card Title"};
+        JList<String> table = new JList<String>(data);
+        // JPanel table = new JPanel();
+        // for (int i = 0; i< 5; i++){
+        //     String[][] rows = {{"1"}, {"2"}};
+        //     String[] headers = {String.format("Set %d", i)};
+        //     JTable t = new JTable(rows, headers);
+        //     table.add(t);
+            
+        //     t.getTableHeader().setVisible(true);
+        // }
+        JScrollPane tablePane = new JScrollPane(table);
+        // table.getHeaderRow().setVisible(true);
+        // table.setLayout(new BoxLayout(table, BoxLayout.Y_AXIS));
         GridBagConstraints tableGBC = UIController.getGBC(0, 5, 1, 1);
         tableGBC.fill = GridBagConstraints.BOTH;
         tableGBC.gridwidth = 2;
-        add(table, tableGBC);
+        add(tablePane, tableGBC);
 
         // study button
         JButton studyButton = new JButton("Study Selected Cards Only");        
