@@ -5,7 +5,7 @@ public class HomePage extends JFrame{
 
 
 
-    HomePage(){
+    HomePage(CardLayout cardLayout){
 
         setLayout(new GridBagLayout());
 
