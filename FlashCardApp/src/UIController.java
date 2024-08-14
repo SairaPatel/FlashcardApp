@@ -1,10 +1,61 @@
+import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class UIController {
 
-    final static Color darkColour = new Color(220, 40, 80);
-    final static Color midColour = new Color(245, 245, 245);
-    final static Color lightColour = new Color(255, 255, 255);
+    private int currentCardIndex;
+    private ArrayList<Card> cards;
+
+    private HomePage homePage;
+    private EditCardPage editPage;
+    private LearnPage learnPage;
+
+    private CardLayout cardLayout;
+
+    public UIController(){
+        currentCardIndex = 0;
+
+        cards = new ArrayList<Card>();
+        cards.add(new Card(0, "CSS", "Write some stule tags", "<style></style>",0.3));
+        cards.add(new Card(2, "HTMl", "write some basic semantic tags", "<p><p><h1></h1>",5.5));
+        cards.add(new Card(3, "Security", "what is a security threat?", "SQL injection",2));
+        cards.add(new Card(5, "JQuery", "What is jquery for?", "easier to read/write than pure javascript",1));
+
+    }
+
+    public Card getCurrentCard(){
+        return cards.get(currentCardIndex);
+    }
+
+
+    
+    
+    
+    // home page click card
+    public void editCardAtIndex(){
+        //cardID = this.cardList[index]
+        // c = DB.select(cardID)
+        // cardList = {c}
+        //currentCardIndex = 0;
+        // EditPage.loadCurrentCard()
+        // go to edit page
+        
+    }
+
+    public void learnCards(String[] filters){
+        // this.cardList = DB.selectCards
+        // randomise cardList if needed
+        // this.cardIndex = 0
+        // learnPage.loadCurrentCards()
+        // go to learn page
+    }
+
+    // Edit Page save button
+    public void updateCurrentCard(){
+        // c = EditCardPage.getCard()
+        // DB.UpdateCard(c)
+    }
 
    
     /**

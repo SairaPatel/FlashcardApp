@@ -1,6 +1,4 @@
-import java.awt.CardLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -24,14 +22,14 @@ public class App extends JFrame{
         JPanel mainPanel = new JPanel(cardLayout);
 
         // cards
+        LearnPage learn = new LearnPage(cardLayout);
+        mainPanel.add("learn", learn);
         HomePage home = new HomePage(cardLayout);
         mainPanel.add("home", home);
 
         EditCardPage edit = new EditCardPage(cardLayout);
         mainPanel.add("edit", edit);
         
-        LearnPage learn = new LearnPage(cardLayout);
-        mainPanel.add("learn", learn);
 
         
 

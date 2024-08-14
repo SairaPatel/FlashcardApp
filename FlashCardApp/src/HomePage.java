@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class HomePage extends JFrame{
 
@@ -104,23 +105,72 @@ public class HomePage extends JFrame{
         tableGBC.gridwidth = 2;
         add(tablePane, tableGBC);
 
+
+
+        // order radio buttons
+        JPanel orderPanel = new JPanel();
+
+        GridBagConstraints orderPanelGBC = UIController.getGBC(0, 6, 1, 0);
+        orderPanelGBC.gridwidth = 2;
+        add(orderPanel, orderPanelGBC);
+
+        orderPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        ButtonGroup orderBG = new ButtonGroup();
+
+        JRadioButton knowledgeRadio = new JRadioButton("Order by Knowledge");
+        knowledgeRadio.setSelected(true);
+        orderBG.add(knowledgeRadio);
+        orderPanel.add(knowledgeRadio);
+
+        JRadioButton randomRadio = new JRadioButton("Order Randomly");
+        orderBG.add(randomRadio);
+        orderPanel.add(randomRadio);
+
+
+
         // study button
         JButton studyButton = new JButton("Study Selected Cards Only");        
 
-        GridBagConstraints studyButtonGBC = UIController.getGBC(0, 6, 1,0);
+        GridBagConstraints studyButtonGBC = UIController.getGBC(0, 7, 1,0);
         studyButtonGBC.gridwidth = 2;
         add(studyButton, studyButtonGBC);
 
         // studyAll button
         JButton studyAllButton = new JButton("Study All Displayed Cards");        
 
-        GridBagConstraints studyAllButtonGBC = UIController.getGBC(0, 7, 1,0);
+        GridBagConstraints studyAllButtonGBC = UIController.getGBC(0, 8, 1,0);
         studyAllButtonGBC.gridwidth = 2;
         add(studyAllButton, studyAllButtonGBC);
+
+
+
 
         // set layout
         setSize(400, 300);
         setVisible(true);
 
     }
+
+    // apply button click
+    public ArrayList<String> getAllCards(){
+        // f = HomePage.getFilters
+        // cs = DB.selectCards(f)
+        // update controller.cardList
+        // HomePage.updateList(cs)
+        return new ArrayList<String>();
+    }
+    // clear button click
+        // clear all filters
+        // select all cards
+        // update list
+    
+    // jlist item double clicked
+        // controller.editCardAtIndex(index)
+
+
+    // study button
+        // get all filters
+        // controller.learnCards(filters)
+
 }
