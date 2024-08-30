@@ -3,7 +3,8 @@ import java.awt.*;
 
 public class EditCardContentPanel extends JPanel{
 
-
+    private JTextArea frontInput;
+    private JTextArea backInput;
 
     EditCardContentPanel(){
 
@@ -17,7 +18,7 @@ public class EditCardContentPanel extends JPanel{
         add(frontLabel, frontLabelGBC);
         
         // front input
-        JTextArea frontInput = new JTextArea();      
+        frontInput = new JTextArea();      
         JScrollPane frontPane = new JScrollPane(frontInput);  
 
         GridBagConstraints frontInputGBC = UIController.getGBC(0, 1, 1, 1);
@@ -31,7 +32,7 @@ public class EditCardContentPanel extends JPanel{
         add(backLabel, backLabelGBC);
         
         // back input
-        JTextArea backInput = new JTextArea();        
+        backInput = new JTextArea();        
         JScrollPane backPane = new JScrollPane(backInput);
 
         GridBagConstraints backInputGBC = UIController.getGBC(0, 3, 1, 1);
@@ -39,5 +40,18 @@ public class EditCardContentPanel extends JPanel{
         add(backPane, backInputGBC);
 
 
+    }
+
+    public void setContent(String f, String b){
+        frontInput.setText(f);
+        backInput.setText(b);
+    }
+
+    public String getFront(){
+        return frontInput.getText();
+    }
+
+    public String getBack(){
+        return backInput.getText();
     }
 }

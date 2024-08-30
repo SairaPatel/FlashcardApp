@@ -7,32 +7,34 @@ public class App extends JFrame{
     JFrame f;
 
     public App(){
-        setLayout(new GridBagLayout());
-
-        // back button
-        JButton backButton = new JButton("Back");
-        backButton.setVisible(false);
-
-        GridBagConstraints backButtonGBC = UIController.getGBC(0, 0);
-        backButtonGBC.anchor = GridBagConstraints.LINE_START;
-        add(backButton, backButtonGBC);
+        // setLayout(new GridBagLayout());
+        
 
         // card layout panel
         CardLayout cardLayout = new CardLayout();
         JPanel mainPanel = new JPanel(cardLayout);
 
+        UIController controller = new UIController(cardLayout, mainPanel);
+        
+
         // cards
-        LearnPage learn = new LearnPage(cardLayout);
-        mainPanel.add("learn", learn);
-        HomePage home = new HomePage(cardLayout);
+        HomePage home = new HomePage(controller);
         mainPanel.add("home", home);
-
-        EditCardPage edit = new EditCardPage(cardLayout);
+        EditCardPage edit = new EditCardPage(controller);
         mainPanel.add("edit", edit);
-        
+        LearnPage learn = new LearnPage(controller);
+        mainPanel.add("learn", learn);
+
+        controller.setPages(home, edit, learn);
 
         
+        add(mainPanel, BorderLayout.CENTER);
 
+        
+        // set layout
+        setSize(400, 300);
+        setVisible(true);
+        
     }   
     
     public static void main(String[] args) throws Exception {

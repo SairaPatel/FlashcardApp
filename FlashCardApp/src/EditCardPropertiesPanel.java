@@ -1,10 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.RenderingHints.Key;
+import java.awt.event.*;
 
 public class EditCardPropertiesPanel extends JPanel{
 
 
-
+    private JTextField titleInput;
+    private JComboBox<String> setInput;
+    private DefaultListModel<String> tagsListModel;
+    private DefaultComboBoxModel<String> tagsComboModel;
+    private DefaultComboBoxModel<String> setsComboModel;
     EditCardPropertiesPanel(){
 
         setLayout(new GridBagLayout());
@@ -17,7 +23,7 @@ public class EditCardPropertiesPanel extends JPanel{
         add(titleLabel, titleLabelGBC);
         
         // title input
-        JTextField titleInput = new JTextField();        
+        titleInput = new JTextField();        
 
         GridBagConstraints titleInputGBC = UIController.getGBC(0, 1);
         add(titleInput, titleInputGBC);
@@ -31,7 +37,8 @@ public class EditCardPropertiesPanel extends JPanel{
         add(setLabel, setLabelGBC);
 
         // set input
-        JComboBox<String> setInput = new JComboBox<String>();
+        setsComboModel = new DefaultComboBoxModel<String>();
+        setInput = new JComboBox<String>(setsComboModel);
         setInput.setEditable(true);
 
         GridBagConstraints setInputGBC = UIController.getGBC(0, 3);
@@ -39,7 +46,7 @@ public class EditCardPropertiesPanel extends JPanel{
         
 
         // TAGS -------------------------
-        String[] tags = {"Storage", "Secondary Storage and Primary Storage", "HDD", "Memory", "HDD", "Memory", "HDD", "Memory"};
+        // String[] tags = {"Storage", "Secondary Storage and Primary Storage", "HDD", "Memory", "HDD", "Memory", "HDD", "Memory"};
         
         // add tag label
         JLabel addLabel = new JLabel("Add Tag:");
@@ -48,7 +55,9 @@ public class EditCardPropertiesPanel extends JPanel{
         add(addLabel, addLabelGBC);
 
         // add input
-        JComboBox<String> addInput = new JComboBox<String>(tags);
+        tagsComboModel = new DefaultComboBoxModel<String>();
+        JComboBox<String> addInput = new JComboBox<String>(tagsComboModel);
+        
         addInput.setEditable(true);
 
         GridBagConstraints addInputGBC = UIController.getGBC(0, 7);
@@ -60,6 +69,25 @@ public class EditCardPropertiesPanel extends JPanel{
         GridBagConstraints addButtonGBC = UIController.getGBC(0, 8);
         add(addButton, addButtonGBC);
 
+        // add button click action listener
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+
+                // add tag (if not already added)
+                if (addInput.getSelectedItem() != null){
+                    if (tagsListModel.contains(addInput.getSelectedItem().toString())){
+                        JOptionPane.showMessageDialog(titleInput, "This tag has already been added.");
+                    }
+                    else{
+                        tagsListModel.addElement(addInput.getSelectedItem().toString());
+                    
+                    }
+                    addInput.setSelectedIndex(-1);
+    
+                }
+                
+            }
+        });
 
 
         // tags label
@@ -69,9 +97,12 @@ public class EditCardPropertiesPanel extends JPanel{
         add(tagsLabel, tagsLabelGBC);
 
 
+        tagsListModel  = new DefaultListModel<String>();
         // tags list
-        JList<String> tagsList = new JList<String>(tags);
+        JList<String> tagsList = new JList<String>(tagsListModel);
         JScrollPane tagsListPane = new JScrollPane(tagsList);
+
+        
 
         tagsListPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         tagsListPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -80,7 +111,55 @@ public class EditCardPropertiesPanel extends JPanel{
         tagsGBC.fill = GridBagConstraints.BOTH;
         add(tagsListPane, tagsGBC);
         
-        
+        // tags list delete button pressed listener
+        tagsList.addKeyListener(new KeyListener() {
+            public void keyReleased(KeyEvent e){
+                if (tagsList.getSelectedIndex() > -1 && e.getKeyCode() == KeyEvent.VK_DELETE){
+                    for (String s: tagsList.getSelectedValuesList()){
+                        tagsListModel.removeElement(s);
+                    }
+                }
+            }
+            public void keyTyped(KeyEvent e){}
+            public void keyPressed(KeyEvent e){}
+        });
 
     }
+
+    public void setProperties(String title, String set, String[] tags, String[] allSets, String[] allTags){
+        titleInput.setText(title);
+        setInput.setSelectedItem(set);
+
+        for (String s: allSets){
+            setsComboModel.addElement(s);
+        }
+
+        for(String t: allTags){
+            tagsComboModel.addElement(t);
+        }
+        
+        for (String tag: tags){
+            tagsListModel.addElement(tag);
+        }
+    }
+
+
+    public String getTitle(){
+        return titleInput.getText();
+    }
+
+    public String getSet(){
+        if (setInput.getSelectedItem() == null){
+            return "My Set";
+        }
+        
+        return setInput.getSelectedItem().toString();
+    }
+    public String[] getTags(){
+        String[] ts = new String[tagsListModel.size()];
+        tagsListModel.copyInto(ts);
+        return ts;
+    }
+
+
 }

@@ -1,12 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-public class HomePage extends JFrame{
+public class HomePage extends JPanel{
+    private UIController controller;
 
+    private JList<String> setsList;
+    private JList<String> tagsList;
+    private JList<String> cardsList;
+    private JTextField keywordInput;
 
-
-    HomePage(CardLayout cardLayout){
+    HomePage(UIController c){
+        controller = c;
 
         setLayout(new GridBagLayout());
 
@@ -18,8 +24,8 @@ public class HomePage extends JFrame{
         add(setsLabel, setsLabelGBC);
         
         // sets input
-        String[] sets = {"Maths", "WebDev", "Func prog", "Architecture", "intro to programming", "Maths 2", "info structures"};
-        JList<String> setsList = new JList<String>(sets);      
+        
+        setsList = new JList<String>();    
         JScrollPane setsListPanel = new JScrollPane(setsList);  
 
         GridBagConstraints setsGBC = UIController.getGBC(0, 1, 1, 0.5);
@@ -34,8 +40,7 @@ public class HomePage extends JFrame{
         add(tagsLabel, tagsLabelGBC);
         
         // tags input
-        String[] tags = {"Memory", "Hardware", "Software", "Security", "Logic", "Graphs", "Trees", "Functions"};
-        JList<String> tagsList = new JList<String>(tags);      
+        tagsList = new JList<String>();      
         JScrollPane tagsListPanel = new JScrollPane(tagsList);  
 
         GridBagConstraints tagsGBC = UIController.getGBC(1, 1, 1, 0.5);
@@ -51,7 +56,7 @@ public class HomePage extends JFrame{
         add(keywordLabel, keywordLabelGBC);
         
         // keyword input
-        JTextField keywordInput = new JTextField();        
+        keywordInput = new JTextField();        
 
         GridBagConstraints keywordInputGBC = UIController.getGBC(0, 3, 1,0);
         keywordInputGBC.gridwidth = 2;
@@ -64,6 +69,9 @@ public class HomePage extends JFrame{
         GridBagConstraints applyButtonGBC = UIController.getGBC(0, 4, 1,0);
         add(applyButton, applyButtonGBC);
 
+        // apply button click action listener
+        applyButton.addActionListener(applyClickedListener);
+
 
         // clear button
         JButton clearButton = new JButton("Clear Filters");        
@@ -71,39 +79,21 @@ public class HomePage extends JFrame{
         GridBagConstraints clearButtonGBC = UIController.getGBC(1, 4, 1,0);
         add(clearButton, clearButtonGBC);
 
+        // clear button click action listener
+        clearButton.addActionListener(clearClickedListener);
 
-        // table
-        String[] data = {
-            "Web Dev: Usability",
-            "Web Dev: HTML basics",
-            "Web Dev: JQuery",
-            "Programming: Recursion",
-            "Programming: Generics",
-            "Programming: Inheritance",
-            "Programming: Interfaces",
-            "Architecture: Logic Gates",
-            "Architecture: Sequential logic",
-            "Architecture: IO",
-            "Architecture: FE Cycle"
-        };
-        // String[] columnNames = {"Set", "Card Title"};
-        JList<String> table = new JList<String>(data);
-        // JPanel table = new JPanel();
-        // for (int i = 0; i< 5; i++){
-        //     String[][] rows = {{"1"}, {"2"}};
-        //     String[] headers = {String.format("Set %d", i)};
-        //     JTable t = new JTable(rows, headers);
-        //     table.add(t);
-            
-        //     t.getTableHeader().setVisible(true);
-        // }
-        JScrollPane tablePane = new JScrollPane(table);
-        // table.getHeaderRow().setVisible(true);
-        // table.setLayout(new BoxLayout(table, BoxLayout.Y_AXIS));
+        // cards list
+        cardsList = new JList<String>();
+        JScrollPane cardsPane = new JScrollPane(cardsList);
+
+        // cards gbc
         GridBagConstraints tableGBC = UIController.getGBC(0, 5, 1, 1);
         tableGBC.fill = GridBagConstraints.BOTH;
         tableGBC.gridwidth = 2;
-        add(tablePane, tableGBC);
+        add(cardsPane, tableGBC);
+
+        // card item click action listener
+        cardsList.addMouseListener(cardClickedListener);
 
 
 
@@ -145,6 +135,8 @@ public class HomePage extends JFrame{
 
 
 
+        resetInputs();
+
 
         // set layout
         setSize(400, 300);
@@ -152,22 +144,55 @@ public class HomePage extends JFrame{
 
     }
 
+
+    public void reloadCards(){
+        cardsList.setListData(controller.getCurrentCardTitlesWithSets());
+    }
+    
+
     // apply button click
     public ArrayList<String> getAllCards(){
-        // f = HomePage.getFilters
-        // cs = DB.selectCards(f)
-        // update controller.cardList
-        // HomePage.updateList(cs)
         return new ArrayList<String>();
     }
-    // clear button click
-        // clear all filters
-        // select all cards
-        // update list
-    
-    // jlist item double clicked
-        // controller.editCardAtIndex(index)
 
+    public ActionListener applyClickedListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+            String[] sets = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+            controller.filterCurrentCards(tags,sets, keywordInput.getText());
+            
+            reloadCards();
+        }
+    };
+
+
+    // clear button click
+
+    public ActionListener clearClickedListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            resetInputs();
+        }
+    };
+
+    public void resetInputs(){
+        tagsList.setListData(controller.getTags());
+        setsList.setListData(controller.getSets());
+        keywordInput.setText("");
+
+        controller.loadCardHeaders();
+
+        reloadCards();
+    }
+
+    // card list item clicked listener
+    MouseAdapter cardClickedListener = new MouseAdapter() {
+        public void mouseClicked(MouseEvent e){
+            if (e.getClickCount() == 2 ){
+                controller.editCardAtIndex(cardsList.getSelectedIndex());
+            }
+        }
+    };
+    
 
     // study button
         // get all filters

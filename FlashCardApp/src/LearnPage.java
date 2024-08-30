@@ -2,11 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class LearnPage extends JFrame{
+public class LearnPage extends JPanel{
+
+    private UIController controller;
 
 
-
-    LearnPage(CardLayout cardLayout){
+    LearnPage(UIController c){
+        controller =c;
+        
         setLayout(new GridBagLayout());
 
         // quit button
@@ -34,7 +37,7 @@ public class LearnPage extends JFrame{
         cardGBC.fill = GridBagConstraints.BOTH;
         add(card, cardGBC);
 
-
+        
 
         // next button
         JButton nextButton = new JButton("Next");

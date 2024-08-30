@@ -12,16 +12,39 @@ public class UIController {
     private LearnPage learnPage;
 
     private CardLayout cardLayout;
+    private JPanel root;
 
-    public UIController(){
+    public UIController(CardLayout c, JPanel r){
+        cardLayout = c;
+        root = r;
+
         currentCardIndex = 0;
 
-        cards = new ArrayList<Card>();
-        cards.add(new Card(0, "CSS", "Write some stule tags", "<style></style>",0.3));
-        cards.add(new Card(2, "HTMl", "write some basic semantic tags", "<p><p><h1></h1>",5.5));
-        cards.add(new Card(3, "Security", "what is a security threat?", "SQL injection",2));
-        cards.add(new Card(5, "JQuery", "What is jquery for?", "easier to read/write than pure javascript",1));
+        loadCardHeaders();
+    }
+    public void switchToHome(){
+        loadCardHeaders();
+        cardLayout.show( root,"home");
+    }
 
+    public void switchToEdit(){
+        cardLayout.show( root,"edit");
+    }
+
+    public void switchToLearn(){
+        cardLayout.show( root,"learn");
+    }
+
+    public void loadCardHeaders(){
+        // select card titles, sets, tags and ids
+        cards = DB.getAllCards();
+    }
+
+
+    public void setPages(HomePage home, EditCardPage edit, LearnPage learn){
+        homePage = home;
+        editPage = edit;
+        learnPage = learn;
     }
 
     public Card getCurrentCard(){
@@ -29,18 +52,53 @@ public class UIController {
     }
 
 
+    // home page  - get sets
+    public String[] getSets(){
+        return DB.getAllSets();
+    }
+    // home page - get tags
+    public String[] getTags(){
+        return DB.getAllTags();
+    }
+
+    // home page - get card titles with their sets
+    public String[] getCurrentCardTitlesWithSets(){
+        String[] titles = new String[cards.size()];
+
+        for (int i = 0; i < cards.size(); i++){
+            titles[i] = String.format("%s: %s",cards.get(i).getTitle() , cards.get(i).getSet());
+        }
+        return titles;
+    }
     
-    
+    // home page - filter current cards
+    public void filterCurrentCards(String[] tags, String[] sets, String keyword){
+        cards = DB.getSomeCards(tags, sets, keyword);
+    }
     
     // home page click card
-    public void editCardAtIndex(){
-        //cardID = this.cardList[index]
-        // c = DB.select(cardID)
-        // cardList = {c}
-        //currentCardIndex = 0;
+    public void editCardAtIndex(int index){
+        Card c = DB.getCard(cards.get(index).getID());
+
+        cards = new ArrayList<Card>();
+        cards.add(c);
+        currentCardIndex = 0;
+
+        switchToEdit();
+        editPage.loadCard();
         // EditPage.loadCurrentCard()
-        // go to edit page
         
+    }
+
+
+    // save current edit card
+    public void updateCard(String title, String set, String[] tags, String front, String back){
+        DB.updateCard(title, set, tags, front, back);
+        System.out.println(title);
+        System.out.println(set);
+        System.out.println(String.format("%s %d", tags.toString(), tags.length));
+        System.out.println(front);
+        System.out.println(back);
     }
 
     public void learnCards(String[] filters){
