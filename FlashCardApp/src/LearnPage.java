@@ -6,6 +6,10 @@ public class LearnPage extends JPanel{
 
     private UIController controller;
 
+    private JProgressBar progressBar;
+    private LearnCardPanel card;
+
+    private JButton nextButton;
 
     LearnPage(UIController c){
         controller =c;
@@ -20,18 +24,25 @@ public class LearnPage extends JPanel{
         quitGBC.fill = GridBagConstraints.NONE;
         add(quitButton, quitGBC);
         
+        // quit button click action listener
+        quitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                controller.switchToHome();
+            }
+        });
+        
 
         // progress bar
-        JProgressBar progressBar = new JProgressBar(0, 30);
-        progressBar.setValue(5);
+        progressBar = new JProgressBar(0, 30);
+        // progressBar.setValue(1);
         progressBar.setStringPainted(true);
-        progressBar.setString(String.format("%1d of %2d", progressBar.getValue() ,progressBar.getMaximum()));
+        // progressBar.setString(String.format("%1d of %2d", progressBar.getValue() ,progressBar.getMaximum()));
 
         GridBagConstraints barGBC = UIController.getGBC(0, 1);
         add(progressBar, barGBC);
         
         // learn card panel
-        LearnCardPanel card = new LearnCardPanel();
+        card = new LearnCardPanel();
 
         GridBagConstraints cardGBC = UIController.getGBC(0, 2, 1, 1);
         cardGBC.fill = GridBagConstraints.BOTH;
@@ -40,36 +51,58 @@ public class LearnPage extends JPanel{
         
 
         // next button
-        JButton nextButton = new JButton("Next");
+        nextButton = new JButton("Next");
         GridBagConstraints nextGBC = UIController.getGBC(0, 3);
         add(nextButton, nextGBC);
 
-        
+        nextButton.addActionListener(nextClickedListener);
 
 
         // set layout
         setSize(400, 300);
         setVisible(true);
 
+
     }
 
+    public void loadCurrentCard(){
+        System.out.println(String.format("i: %d . m: %d", controller.getCurrentIndex(), controller.getCurrentCardsLength()));
+        if (controller.getCurrentIndex() == controller.getCurrentCardsLength() -1){
+            nextButton.setText("Finish");
+        }
+        else{
+            nextButton.setText("Next");
+        }
 
-    // load current Card
-        // load card: Controller.getCurrentCard()
-        // update UI
-        // update ProgressBar
 
-        // if current card = final card
-            // change Next button to Finish 
+        Card c = controller.getCurrentCard();
+        card.setValues(c.getTitle(), c.getFront(), c.getBack(), c.getRating());
+        
+        progressBar.setValue(controller.getCurrentIndex()+1);
+        progressBar.setMaximum(controller.getCurrentCardsLength());
+        progressBar.setString(String.format("%1d of %2d", progressBar.getValue() ,progressBar.getMaximum()));
 
-    // next button clicked
-        // r = selected rating value 
-        // controller.updateCurrentCardRating(r)
+    }
 
-        // if not controller.deckCompleted:
-            // controller.nextCard
-            // this.loadCurrentCard()
-        //else
-            // controller.goHome()
+    private ActionListener nextClickedListener = new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+            // update card rating
+            controller.updateCurrentCardRating(card.getSelectedRating());
+
+            if (nextButton.getText() == "Finish"){
+                controller.switchToHome();
+            }
+            else{
+                
+                controller.nextCardIndex();
+                loadCurrentCard();
+                
+            }
+            
+        }
+    };
+
+    
+    
 
 }

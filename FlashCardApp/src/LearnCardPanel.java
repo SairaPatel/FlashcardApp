@@ -2,17 +2,25 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.awt.event.*;
+import java.lang.Math;
 
 public class LearnCardPanel extends JPanel{
 
+    private JLabel titleLabel;
+    private JTextArea frontContent;
+    private JTextArea userInput;
+    private JTextArea backContent;
+    private JRadioButton[] ratingButtons;
 
+    private JToggleButton revealButton;
+    private JScrollPane backContentPanel;
 
     LearnCardPanel(){
 
         setLayout(new GridBagLayout());
 
         // Title label
-        JLabel titleLabel = new JLabel("Title of card", SwingConstants.CENTER);
+        titleLabel = new JLabel("Title of card", SwingConstants.CENTER);
         
         GridBagConstraints titleLabelGBC = UIController.getGBC(0, 0);
         titleLabelGBC.gridwidth = 2;
@@ -21,7 +29,7 @@ public class LearnCardPanel extends JPanel{
 
 
         // front content
-        JTextArea frontContent = new JTextArea("Here is the front of the card");
+        frontContent = new JTextArea("Here is the front of the card");
         frontContent.setEditable(false);
         frontContent.setLineWrap(true);
         JScrollPane frontPane = new JScrollPane(frontContent);
@@ -35,10 +43,11 @@ public class LearnCardPanel extends JPanel{
         
 
         // back panel
-        JTextArea backContent = new JTextArea("card's back content");
+        backContent = new JTextArea("card's back content");
         backContent.setEditable(false);
         backContent.setLineWrap(true);
-        JScrollPane backContentPanel = new JScrollPane(backContent);
+
+        backContentPanel = new JScrollPane(backContent);
         backContentPanel.setVisible(false);
         
         GridBagConstraints backGBC = UIController.getGBC(0, 3, 1,1);
@@ -55,7 +64,7 @@ public class LearnCardPanel extends JPanel{
         add(answerLabel, answerLabelGBC);
 
         // answer input
-        JTextArea userInput = new JTextArea();
+        userInput = new JTextArea();
         userInput.setLineWrap(true);
         JScrollPane inputPane = new JScrollPane(userInput);
 
@@ -66,7 +75,7 @@ public class LearnCardPanel extends JPanel{
 
 
         // reveal back button
-        JToggleButton revealButton = new JToggleButton("Show Content");
+        revealButton = new JToggleButton("Show Content");
                 
         GridBagConstraints revealButtonGBC = UIController.getGBC(0, 4);
         revealButtonGBC.gridwidth = 2;
@@ -109,15 +118,40 @@ public class LearnCardPanel extends JPanel{
 
         ButtonGroup ratingBG = new ButtonGroup();
 
-        String[] ratings = new String[] {"Absolutely", "Yes","Mostly", "Kind Of", "A little", "Barely"};
-        for (String s: ratings){
-            JRadioButton r = new JRadioButton(s);
-            ratingBG.add(r);
-            ratingPanel.add(r);
+        String[] ratings = new String[] { "Barely", "A little",  "Kind Of", "Mostly", "Yes","Absolutely"};
+        
+        ratingButtons = new JRadioButton[6];
+        for (int i =0; i<6; i++){
+
+            ratingButtons[i] = new JRadioButton(ratings[i]);
+            ratingBG.add(ratingButtons[i]);
+            ratingPanel.add(ratingButtons[i]);
+
         }
         
-
-        
-
     }
+
+
+    public void setValues(String title, String front, String back, double rating){
+        titleLabel.setText(title);
+        frontContent.setText(front);
+        backContent.setText(back);
+        userInput.setText("");
+
+        ratingButtons[(int)rating].setSelected(true);
+
+        revealButton.setText("Show Content");
+        backContentPanel.setVisible(false);
+    }
+
+    public int getSelectedRating(){
+        for (int i =0; i<6;i++){
+            if (ratingButtons[i].isSelected()){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    
 }

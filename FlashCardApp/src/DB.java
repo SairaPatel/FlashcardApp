@@ -33,7 +33,6 @@ public class DB {
     public static ArrayList<Card> getSomeCards(String[] tags, String[] sets, String keyword){
         ArrayList<Card> c =  getCards();
         c.remove(0);
-        c.remove(0);
         return c;
     }
 
@@ -46,5 +45,10 @@ public class DB {
     public static void updateCard(String title, String set, String[] tags, String front, String back){
         // DB UPDATE CARD
         // DB UPDATE TAGS
+    }
+
+    public static void updateCardRating(int index, double rating){
+        // set card rating to equal rating.
+        System.out.println(rating);
     }
 }

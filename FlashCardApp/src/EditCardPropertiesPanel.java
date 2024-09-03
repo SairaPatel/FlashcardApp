@@ -51,7 +51,7 @@ public class EditCardPropertiesPanel extends JPanel{
         // add tag label
         JLabel addLabel = new JLabel("Add Tag:");
 
-        GridBagConstraints addLabelGBC = UIController.getGBC(0, 6 );
+        GridBagConstraints addLabelGBC = UIController.getGBC(0, 4 );
         add(addLabel, addLabelGBC);
 
         // add input
@@ -60,13 +60,13 @@ public class EditCardPropertiesPanel extends JPanel{
         
         addInput.setEditable(true);
 
-        GridBagConstraints addInputGBC = UIController.getGBC(0, 7);
+        GridBagConstraints addInputGBC = UIController.getGBC(0, 5);
         add(addInput, addInputGBC);
 
         // add button
         JButton addButton = new JButton("Add");
 
-        GridBagConstraints addButtonGBC = UIController.getGBC(0, 8);
+        GridBagConstraints addButtonGBC = UIController.getGBC(0, 6);
         add(addButton, addButtonGBC);
 
         // add button click action listener
@@ -93,7 +93,7 @@ public class EditCardPropertiesPanel extends JPanel{
         // tags label
         JLabel tagsLabel = new JLabel("Tags:");
         
-        GridBagConstraints tagsLabelGBC = UIController.getGBC(0, 4);
+        GridBagConstraints tagsLabelGBC = UIController.getGBC(0, 7);
         add(tagsLabel, tagsLabelGBC);
 
 
@@ -107,7 +107,7 @@ public class EditCardPropertiesPanel extends JPanel{
         tagsListPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         tagsListPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        GridBagConstraints tagsGBC = UIController.getGBC(0, 5,1,1);
+        GridBagConstraints tagsGBC = UIController.getGBC(0, 8,1,1);
         tagsGBC.fill = GridBagConstraints.BOTH;
         add(tagsListPane, tagsGBC);
         

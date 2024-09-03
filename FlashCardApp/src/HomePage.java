@@ -10,6 +10,8 @@ public class HomePage extends JPanel{
     private JList<String> tagsList;
     private JList<String> cardsList;
     private JTextField keywordInput;
+    private JRadioButton randomRadio;
+
 
     HomePage(UIController c){
         controller = c;
@@ -113,25 +115,20 @@ public class HomePage extends JPanel{
         orderBG.add(knowledgeRadio);
         orderPanel.add(knowledgeRadio);
 
-        JRadioButton randomRadio = new JRadioButton("Order Randomly");
+        randomRadio = new JRadioButton("Order Randomly");
         orderBG.add(randomRadio);
         orderPanel.add(randomRadio);
 
 
 
         // study button
-        JButton studyButton = new JButton("Study Selected Cards Only");        
+        JButton studyButton = new JButton("Study These Cards");        
 
         GridBagConstraints studyButtonGBC = UIController.getGBC(0, 7, 1,0);
         studyButtonGBC.gridwidth = 2;
         add(studyButton, studyButtonGBC);
 
-        // studyAll button
-        JButton studyAllButton = new JButton("Study All Displayed Cards");        
-
-        GridBagConstraints studyAllButtonGBC = UIController.getGBC(0, 8, 1,0);
-        studyAllButtonGBC.gridwidth = 2;
-        add(studyAllButton, studyAllButtonGBC);
+        studyButton.addActionListener(studyAllClickedListener);
 
 
 
@@ -159,7 +156,7 @@ public class HomePage extends JPanel{
         public void actionPerformed(ActionEvent e){
             String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
             String[] sets = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
-            controller.filterCurrentCards(tags,sets, keywordInput.getText());
+            controller.loadFilteredCardHeaders(tags,sets, keywordInput.getText());
             
             reloadCards();
         }
@@ -194,8 +191,16 @@ public class HomePage extends JPanel{
     };
     
 
-    // study button
-        // get all filters
-        // controller.learnCards(filters)
+
+    public ActionListener studyAllClickedListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+            String[] sets = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+            controller.loadFilteredCards(tags,sets, keywordInput.getText(), randomRadio.isSelected());
+            
+            controller.switchToLearn();
+            
+        }
+    };
 
 }

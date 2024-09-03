@@ -23,20 +23,24 @@ public class UIController {
         loadCardHeaders();
     }
     public void switchToHome(){
+        currentCardIndex = 0;
         loadCardHeaders();
         cardLayout.show( root,"home");
     }
 
     public void switchToEdit(){
+        currentCardIndex = 0;
         cardLayout.show( root,"edit");
     }
 
     public void switchToLearn(){
+        currentCardIndex = 0;
+        learnPage.loadCurrentCard();
         cardLayout.show( root,"learn");
     }
 
     public void loadCardHeaders(){
-        // select card titles, sets, tags and ids
+        // select all card titles, sets, tags and ids
         cards = DB.getAllCards();
     }
 
@@ -71,10 +75,20 @@ public class UIController {
         return titles;
     }
     
-    // home page - filter current cards
-    public void filterCurrentCards(String[] tags, String[] sets, String keyword){
+    // home page - set filtered current cards for displaying (titles,sets,ids only)
+    public void loadFilteredCardHeaders(String[] tags, String[] sets, String keyword){
         cards = DB.getSomeCards(tags, sets, keyword);
     }
+
+    // home page - set filtered current cards for learning(all card properties). ordered by rating or random
+    public void loadFilteredCards(String[] tags, String[] sets, String keyword, boolean orderRandomly){
+        //order by rating score or by RAND()
+        cards = DB.getSomeCards(tags, sets, keyword);
+        if (orderRandomly){
+            cards.add(new Card(0, "Random final", "Maths", "front","back", 3 ));
+        }
+    }
+
     
     // home page click card
     public void editCardAtIndex(int index){
@@ -82,7 +96,6 @@ public class UIController {
 
         cards = new ArrayList<Card>();
         cards.add(c);
-        currentCardIndex = 0;
 
         switchToEdit();
         editPage.loadCard();
@@ -101,20 +114,29 @@ public class UIController {
         System.out.println(back);
     }
 
-    public void learnCards(String[] filters){
-        // this.cardList = DB.selectCards
-        // randomise cardList if needed
-        // this.cardIndex = 0
-        // learnPage.loadCurrentCards()
-        // go to learn page
+    
+
+    //update card rating
+    public void updateCurrentCardRating(int rating){
+        Card currentCard = getCurrentCard();
+        double newRating = (rating + currentCard.getRating())/2;
+        DB.updateCardRating(currentCard.getID(), newRating);
     }
 
-    // Edit Page save button
-    public void updateCurrentCard(){
-        // c = EditCardPage.getCard()
-        // DB.UpdateCard(c)
+    // switch current card to next card. 
+    public void nextCardIndex(){
+        
+        currentCardIndex += 1;
+
     }
 
+    public int getCurrentIndex(){
+        return currentCardIndex;
+    }
+
+    public int getCurrentCardsLength(){
+        return cards.size();
+    }
    
     /**
      * Returns a GridBagConstraints object with: ipadx = 2 ipady = 2, weightx and weighty = 0.
