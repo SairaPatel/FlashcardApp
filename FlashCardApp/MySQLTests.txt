@@ -1,0 +1,52 @@
+MySQL commands that were tested in cmd console.
+
+
+----------------------------------------------------------------
+#0 For testing only:
+	- Gets all cards with tags
+	- Doesn’t include cards with no tags or tags with no cards
+
+SELECT *
+FROM CardTags
+INNER JOIN Cards ON Cards.CardID = CardTags.CardID
+INNER JOIN Tags ON Tags.TagID = CardTags.TagID
+;
+
+
+----------------------------------------------------------------
+#1 to get all of a card's tags - TESTED AND WORKS
+
+SELECT Tags.Name
+
+FROM CardTags
+INNER JOIN Cards ON Cards.CardID = CardTags.CardID
+INNER JOIN Tags ON Tags.TagID = CardTags.TagID
+
+WHERE Cards.CardID = 3
+;
+
+
+----------------------------------------------------------------
+#2 to get all cards with certain tags - TESTED AND WORKS
+
+SELECT * FROM Cards WHERE CardID IN
+    (
+
+    SELECT DISTINCT Cards.CardID
+
+        FROM CardTags
+        INNER JOIN Cards ON Cards.CardID = CardTags.CardID
+        INNER JOIN Tags ON Tags.TagID = CardTags.TagID
+
+        WHERE Tags.Name IN ("Hardware", "Storage")
+    )
+;
+
+
+----------------------------------------------------------------
+#3 to get all unique SETS - TESTED AND WORKS
+SELECT DISTINCT CardSet From Cards;
+
+----------------------------------------------------------------
+#4 cascade on delete -TESTED AND WORKS
+DELETE FROM Tags WHERE Name = "Storage";

@@ -1,0 +1,36 @@
+Code for creating database tables:
+
+
+CREATE TABLE Cards (
+	CardID int NOT NULL AUTO_INCREMENT,
+	Title varchar(255) DEFAULT 'Untitled',
+	CardSet varchar(255) DEFAULT 'Set 1',
+	Front varchar(3000) DEFAULT '',
+	Back varchar(6000) DEFAULT '',
+	Rating float(3) DEFAULT 0,
+	PRIMARY KEY (CardID)
+	
+	);
+	
+	
+	
+CREATE TABLE Tags (
+	TagID int NOT NULL AUTO_INCREMENT ,
+	Name varchar(255) NOT NULL,
+	PRIMARY KEY (TagID)
+	
+	);
+	
+	
+	
+CREATE TABLE CardTags (
+	CardID int,
+	TagID int,
+	PRIMARY KEY (CardID, TagID),
+	FOREIGN KEY (CardID) REFERENCES Cards(CardID) ON DELETE CASCADE,
+	FOREIGN KEY (TagID) REFERENCES Tags(TagID) ON DELETE CASCADE
+
+	);
+
+
+
