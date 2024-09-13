@@ -66,7 +66,9 @@ public class LearnPage extends JPanel{
     }
 
     public void loadCurrentCard(){
-        System.out.println(String.format("i: %d . m: %d", controller.getCurrentIndex(), controller.getCurrentCardsLength()));
+
+        controller.loadCurrentCardProperties();
+
         if (controller.getCurrentIndex() == controller.getCurrentCardsLength() -1){
             nextButton.setText("Finish");
         }

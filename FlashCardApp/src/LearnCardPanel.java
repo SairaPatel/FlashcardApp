@@ -132,13 +132,14 @@ public class LearnCardPanel extends JPanel{
     }
 
 
-    public void setValues(String title, String front, String back, double rating){
+    public void setValues(String title, String front, String back, float rating){
         titleLabel.setText(title);
         frontContent.setText(front);
         backContent.setText(back);
         userInput.setText("");
 
         ratingButtons[(int)rating].setSelected(true);
+        System.out.println(rating);
 
         revealButton.setText("Show Content");
         backContentPanel.setVisible(false);

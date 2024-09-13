@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.RenderingHints.Key;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class EditCardPropertiesPanel extends JPanel{
 
@@ -11,7 +12,16 @@ public class EditCardPropertiesPanel extends JPanel{
     private DefaultListModel<String> tagsListModel;
     private DefaultComboBoxModel<String> tagsComboModel;
     private DefaultComboBoxModel<String> setsComboModel;
+
+    private ArrayList<String> addedTags;
+    private ArrayList<String> removedTags;
     EditCardPropertiesPanel(){
+
+        
+        // added Tags list
+        addedTags = new ArrayList<String>();
+        removedTags = new ArrayList<String>();
+
 
         setLayout(new GridBagLayout());
 
@@ -69,17 +79,27 @@ public class EditCardPropertiesPanel extends JPanel{
         GridBagConstraints addButtonGBC = UIController.getGBC(0, 6);
         add(addButton, addButtonGBC);
 
+
         // add button click action listener
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
 
                 // add tag (if not already added)
                 if (addInput.getSelectedItem() != null){
-                    if (tagsListModel.contains(addInput.getSelectedItem().toString())){
+                    String item = addInput.getSelectedItem().toString();
+                    if (tagsListModel.contains(item)){
                         JOptionPane.showMessageDialog(titleInput, "This tag has already been added.");
                     }
                     else{
-                        tagsListModel.addElement(addInput.getSelectedItem().toString());
+                        tagsListModel.addElement(item);
+
+                        // update removedTags/addedTags lists
+                        if (removedTags.contains(item)){
+                            removedTags.remove(item);
+                        }
+                        else{
+                            addedTags.add(item);
+                        }
                     
                     }
                     addInput.setSelectedIndex(-1);
@@ -110,12 +130,23 @@ public class EditCardPropertiesPanel extends JPanel{
         GridBagConstraints tagsGBC = UIController.getGBC(0, 8,1,1);
         tagsGBC.fill = GridBagConstraints.BOTH;
         add(tagsListPane, tagsGBC);
+
+        
         
         // tags list delete button pressed listener
         tagsList.addKeyListener(new KeyListener() {
             public void keyReleased(KeyEvent e){
                 if (tagsList.getSelectedIndex() > -1 && e.getKeyCode() == KeyEvent.VK_DELETE){
                     for (String s: tagsList.getSelectedValuesList()){
+
+                        // update removedTags/addedTags lists
+                        if (addedTags.contains(s)){
+                            addedTags.remove(s);
+                        }
+                        else{
+                            removedTags.add(s);
+                        }
+
                         tagsListModel.removeElement(s);
                     }
                 }
@@ -159,10 +190,18 @@ public class EditCardPropertiesPanel extends JPanel{
         
         return setInput.getSelectedItem().toString();
     }
-    public String[] getTags(){
-        String[] ts = new String[tagsListModel.size()];
-        tagsListModel.copyInto(ts);
-        return ts;
+    // public String[] getTags(){
+    //     String[] ts = new String[tagsListModel.size()];
+    //     tagsListModel.copyInto(ts);
+    //     return ts;
+    // }
+
+    public ArrayList<String> getAddedTags(){
+        return addedTags;
+    }
+
+    public ArrayList<String> getRemovedTags(){
+        return removedTags;
     }
 
 

@@ -7,9 +7,11 @@ public class Card {
     private String set;
     private String[] tags;
 
-    private double rating;
+    private float rating;
 
-    Card(int ID, String t, String s, String[] tags, String f, String b, double r){
+    // not used yet?
+    Card(int ID, String t, String s, String[] tags, String f, String b, float r){
+        this.id = ID;
         title = t;
         front = f;
         back = b;
@@ -19,20 +21,28 @@ public class Card {
     }
 
     // check if actually needed?
-    Card(int ID, String t, String s, String f, String b, double r) {
-        title = t;
-        front = f;
-        back = b;
-        set = s;
-        rating = r;
+    Card(int ID, String t, String s, String f, String b, float r) {
+        // title = t;
+        // front = f;
+        // back = b;
+        // set = s;
+        // rating = r;
+        this.id = ID;
+        setProperties(t, s, f, b, r);
         tags = new String[0]; 
     }
 
+    // used this
     Card(int ID, String t, String s){
+        this.id= ID;
         title = t;
         set = s;
         tags = new String[0]; 
         rating = 0;
+    }
+
+    Card(int id){
+        this.id = id;
     }
 
     public void updateRating(int val){
@@ -44,7 +54,17 @@ public class Card {
         }
     }
         
-   
+    public void setProperties(String t, String s, String f, String b, float r){
+        title = t;
+        front = f;
+        back = b;
+        set = s;
+        rating = r;
+    }
+
+    public void setTags(String[] tags){
+        this.tags=  tags;
+    }
 
 
     // getters
@@ -67,8 +87,12 @@ public class Card {
     public String getBack(){
         return back;
     }
-    public double getRating(){
+    public float getRating(){
         return rating;
+    }
+
+    public String toString(){
+        return String.format("T: %s \nS: %s \nF: %s\nB:%s \nR:%f", title, set, front, back, rating);
     }
     
 }

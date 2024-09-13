@@ -2,6 +2,8 @@
 import java.sql.*;
 import java.util.ArrayList;
 
+import com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping;
+
 public class DB {
 
     static final String DB_URL =  "jdbc:mysql://localhost:3306/flashcarddb";
@@ -67,6 +69,7 @@ public class DB {
                 String title = rs.getString("Title");
                 String set = rs.getString("CardSet");
 
+                
                 cards.add(new Card(id, title, set));
             }
 
@@ -103,6 +106,8 @@ public class DB {
             conn.close();
         }
         catch (SQLException e){
+            
+            System.out.println(e.getMessage());
             sets.add("Could not load sets");
         }
         return sets.toArray(new String[sets.size()]);
@@ -127,12 +132,14 @@ public class DB {
             conn.close();
         }
         catch (SQLException e){
+            
+            System.out.println(e.getMessage());
             tags.add("Could not load tags");
         }
         return tags.toArray(new String[tags.size()]);
     }
 
-    public static ArrayList<Card> getSomeCards(String[] tags, String[] sets, String keyword){
+    public static ArrayList<Card> getSomeCards(String[] tags, String[] sets, String keyword, boolean orderRandomly){
         
         // build condition
         
@@ -149,7 +156,11 @@ public class DB {
        
         String keywordCondition = "Cards.Title LIKE ? OR Cards.Front LIKE ? OR Cards.Back LIKE ?";
         
-        
+        String order = "ORDER BY Rating ASC";
+        if (orderRandomly){
+            order = "ORDER BY rand()";
+        }
+
         // build query
         String qry = String.format("""
                 SELECT CardID, Title, CardSet FROM Cards WHERE CardID IN
@@ -162,11 +173,14 @@ public class DB {
                             INNER JOIN Tags ON Tags.TagID = CardTags.TagID
                             
                             WHERE (%s) AND (%s) AND (%s)
-                        )
-                        ;
-                """, tagCondition, setCondition, keywordCondition);
 
-        //WHERE (%s) AND (%s) AND (%s)
+                            
+                        )
+                        %s
+                        ;
+                """, tagCondition, setCondition, keywordCondition, order);
+
+        System.out.println(qry);
         ArrayList<Card> cards = new ArrayList<Card>();
 
         // get all cards with given tags, sets and keywords
@@ -196,7 +210,6 @@ public class DB {
                 int id = rs.getInt("CardID");
                 String title = rs.getString("Title");
                 String set = rs.getString("CardSet");
-                System.out.println(title);
                 cards.add(new Card(id, title, set));
  
             }
@@ -205,6 +218,8 @@ public class DB {
             conn.close();
         }
         catch (SQLException e){
+            
+            System.out.println(e.getMessage());
             cards.add(new Card(0, "Could not load Cards", ""));
         }
 
@@ -212,22 +227,143 @@ public class DB {
         
     }
 
+    public static Card getCardProperties(int id){
+
+        // get card content and ratings 
+        String qry = "SELECT Title, CardSet, Front, Back, Rating FROM Cards WHERE CardID = ?";
+        Card c = new Card(id, "", "", new String[0], "", "", 0);;
+
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement st = conn.prepareStatement(qry);
+            
+        )
+        {
+            st.setInt(1,id);
+
+            ResultSet rs = st.executeQuery();
+            while (rs.next()){
+                String title = ( rs.getString("Title"));
+                String set = rs.getString("CardSet");
+                String front = rs.getString("Front");
+                String back = rs.getString("Back");
+                Float rating = rs.getFloat("Rating");
+                
+                c.setProperties(title, set, front, back, rating);
+            }
+
+            rs.close();
+            st.close();
+            conn.close();
+        }
+        catch(SQLException e){
+            
+            System.out.println(e.getMessage());
+            c.setProperties("Could not load card", "", "", "",0);
+        }
+
+        return c;
+
+    }
 
     public static Card getCard(int id){
 
+        // get properties
+        Card c = getCardProperties(id);
+
+        // get tags
+        String qry = """
+                SELECT Tags.Name
+
+                    FROM CardTags
+                    INNER JOIN Cards ON Cards.CardID = CardTags.CardID
+                    INNER JOIN Tags ON Tags.TagID = CardTags.TagID
+
+                    WHERE Cards.CardID = ?
+                    ;
+                """;
+        ArrayList<String> tags = new ArrayList<String>();
+        try(
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement st = conn.prepareStatement(qry);
+        )
+        {
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()){
+                tags.add( rs.getString("Name"));
+            }
+            rs.close();
+            st.close();
+            conn.close();
+        }
+        catch( SQLException e){
+            tags.add("Could not load tags");
+            System.out.println(e.getMessage());
+        }
         
-        return new Card(id, "HTML and CSS", "Web Dev", "What are the main html tags?", "p, h1-h6, br, div, span, a", 0);
+        c.setTags(tags.toArray(new String[tags.size()]));
+        
+        return c;
 
     }
 
-    public static void updateCard(String title, String set, String[] tags, String front, String back){
-        // DB UPDATE CARD
-        // DB UPDATE TAGS
+
+    public static void updateCard(int id, String title, String set, ArrayList<String> addedTags, ArrayList<String> removedtags, String front, String back){
+        // UPDATE CARD
+        String qry = "UPDATE Cards SET Title = ?, CardSet = ?, Front = ?, Back = ? WHERE CardID = ?";
+
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement st = conn.prepareStatement(qry);
+        )
+        {
+            st.setString(1, title);
+            st.setString(2, set);
+            st.setString(3, front);
+            st.setString(4, back);
+            st.setInt(5,id);
+
+            st.executeUpdate();
+
+            st.close();
+            conn.close();
+        }
+        catch (SQLException e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+
+        // INSERT ADDED TAGS (to Tags and CardTags tables)
+
+        // DELETE REMOVED TAGS (from Tags and CardTags tables)
+        
+
     }
 
-    public static void updateCardRating(int index, double rating){
+    public static void setCardRating(int id, float rating){
+       
         // set card rating to equal rating.
-        System.out.println(rating);
+        String qry = "UPDATE Cards SET rating = ? WHERE CardID = ?";
+
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement st = conn.prepareStatement(qry);
+        )
+        {
+            st.setDouble(1, rating);
+            st.setInt(2, id);
+
+            st.executeUpdate();
+
+            st.close();
+            conn.close();
+        }
+        catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
 
 

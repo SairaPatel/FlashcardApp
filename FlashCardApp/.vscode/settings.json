@@ -1,5 +1,5 @@
 {
-    "java.jdt.ls.java.home": "C:\\Users\\saira\\.vscode\\extensions\\oracle.oracle-java-22.1.1\\out\\jdk_downloads\\jdk-22.0.2",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-22.0.2",
 
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",

@@ -58,7 +58,7 @@ public class EditCardPage extends JPanel{
          saveButton.addActionListener(new ActionListener() {
              public void actionPerformed(ActionEvent e){
 
-                controller.updateCard(sidePanel.getTitle(), sidePanel.getSet(), sidePanel.getTags(), cardsPanel.getFront(), cardsPanel.getBack());
+                controller.updateCard(sidePanel.getTitle(), sidePanel.getSet(), sidePanel.getAddedTags(), sidePanel.getRemovedTags(), cardsPanel.getFront(), cardsPanel.getBack());
                 controller.switchToHome();
              }
          });

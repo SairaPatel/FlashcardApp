@@ -25,6 +25,7 @@ public class UIController {
     public void switchToHome(){
         currentCardIndex = 0;
         loadCardHeaders();
+        homePage.reloadCards();
         cardLayout.show( root,"home");
     }
 
@@ -50,6 +51,11 @@ public class UIController {
         editPage = edit;
         learnPage = learn;
     }
+
+    public void loadCurrentCardProperties(){
+        cards.set(currentCardIndex, DB.getCardProperties(getCurrentCard().getID()));
+    }
+
 
     public Card getCurrentCard(){
         return cards.get(currentCardIndex);
@@ -77,21 +83,21 @@ public class UIController {
     
     // home page - set filtered current cards for displaying (titles,sets,ids only)
     public void loadFilteredCardHeaders(String[] tags, String[] sets, String keyword){
-        cards = DB.getSomeCards(tags, sets, keyword);
+        cards = DB.getSomeCards(tags, sets, keyword, false);
     }
 
     // home page - set filtered current cards for learning(all card properties). ordered by rating or random
     public void loadFilteredCards(String[] tags, String[] sets, String keyword, boolean orderRandomly){
         //order by rating score or by RAND()
-        cards = DB.getSomeCards(tags, sets, keyword);
-        if (orderRandomly){
-            cards.add(new Card(0, "Random final", "Maths", "front","back", 3 ));
-        }
+        cards = DB.getSomeCards(tags, sets, keyword, orderRandomly);
+        
     }
 
     
     // home page click card
     public void editCardAtIndex(int index){
+        
+
         Card c = DB.getCard(cards.get(index).getID());
 
         cards = new ArrayList<Card>();
@@ -105,13 +111,9 @@ public class UIController {
 
 
     // save current edit card
-    public void updateCard(String title, String set, String[] tags, String front, String back){
-        DB.updateCard(title, set, tags, front, back);
-        System.out.println(title);
-        System.out.println(set);
-        System.out.println(String.format("%s %d", tags.toString(), tags.length));
-        System.out.println(front);
-        System.out.println(back);
+    public void updateCard(String title, String set, ArrayList<String> addedTags, ArrayList<String> removedTags, String front, String back){
+        DB.updateCard(getCurrentCard().getID(), title, set, addedTags, removedTags, front, back);
+        
     }
 
     
@@ -119,8 +121,9 @@ public class UIController {
     //update card rating
     public void updateCurrentCardRating(int rating){
         Card currentCard = getCurrentCard();
-        double newRating = (rating + currentCard.getRating())/2;
-        DB.updateCardRating(currentCard.getID(), newRating);
+        // FIX THIS FORMULA _--------------------------------------------------------------
+        float newRating = (rating + currentCard.getRating())/2;
+        DB.setCardRating(currentCard.getID(), newRating);
     }
 
     // switch current card to next card. 
