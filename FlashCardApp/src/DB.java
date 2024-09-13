@@ -23,7 +23,10 @@ public class DB {
 
     // }
     public static String arrayToString(String[] words){
-        
+        if (words.length == 0){
+            return "()";
+        }
+
         String out = "(";
         for (int i = 0; i < words.length -1; i ++){
             out += "'" + words[i] +  "', ";
@@ -32,11 +35,27 @@ public class DB {
         return out;
     }
 
+    public static String arrayToWildcardString(String[] words){
+        if (words.length == 0){
+            return "()";
+        }
+
+        String out = "(";
+        for (int i = 0; i < words.length -1; i ++){
+            out += "?, ";
+        }
+        out += "?)";
+        return out;
+    }
+
     public static ArrayList<Card> getAllCards(){
         
+        // get all cards' id, title and set
+
         String qry = "SELECT CardID, Title, CardSet FROM Cards ";
         ArrayList<Card> cards = new ArrayList<Card>();
         
+
         try(
             Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
             Statement st = conn.createStatement();
@@ -65,7 +84,6 @@ public class DB {
     }
 
     public static String[] getAllSets(){
-        
         String qry = "SELECT DISTINCT CardSet FROM Cards";
         ArrayList<String> sets = new ArrayList<String>();
 
@@ -78,6 +96,11 @@ public class DB {
             while (rs.next()){
                 sets.add( rs.getString("CardSet"));
             }
+
+            
+            rs.close();
+            st.close();
+            conn.close();
         }
         catch (SQLException e){
             sets.add("Could not load sets");
@@ -98,6 +121,10 @@ public class DB {
             while (rs.next()){
                 tags.add(rs.getString("Name"));
             }
+
+            rs.close();
+            st.close();
+            conn.close();
         }
         catch (SQLException e){
             tags.add("Could not load tags");
@@ -109,44 +136,23 @@ public class DB {
         
         // build condition
         
-        String tagCondition = "";
-        if (tags.length > 0){
-            tagCondition = String.format("Tags.Name IN %s ", arrayToString(tags));
+        String tagCondition = "Tags.Name IN " + arrayToWildcardString(tags);
+        if (tags.length == 0){
+            tagCondition =  "TRUE";
         }
-        String setCondition = "";
-        if (sets.length > 0){
-            setCondition = String.format("CardSet IN %s ", arrayToString(sets));
-        }
-        String conditionConnector = "";
-        if (tagCondition != "" && setCondition != ""){
-            conditionConnector = " AND ";
-        }
-
-        String condition = String.format("%s%s%s", tagCondition, conditionConnector, setCondition);
-
-
-        String keywordCondition = "";
-        System.out.println(keyword.length());
-        if (keyword.length() > 0){
-            keywordCondition = String.format("Cards.Title LIKE '%%%s%%'", keyword);
-        }
-
-        
-        String conditionConnector2 = "";
-        if (condition != "" && keywordCondition != ""){
-            conditionConnector2 = " AND ";
-        }
-
-        condition = String.format("%s%s%s", condition, conditionConnector2, keywordCondition);
-
-        if (condition != ""){
-            condition = "WHERE " + condition;
-        }
-
         
 
+        String setCondition = "CardSet IN " + arrayToWildcardString(sets);
+        if (sets.length == 0){
+            setCondition = "TRUE";
+        }
+       
+        String keywordCondition = "Cards.Title LIKE ? OR Cards.Front LIKE ? OR Cards.Back LIKE ?";
+        
+        
+        // build query
         String qry = String.format("""
-                SELECT * FROM Cards WHERE CardID IN
+                SELECT CardID, Title, CardSet FROM Cards WHERE CardID IN
                         (
 
                         SELECT DISTINCT Cards.CardID
@@ -155,27 +161,48 @@ public class DB {
                             INNER JOIN Cards ON Cards.CardID = CardTags.CardID
                             INNER JOIN Tags ON Tags.TagID = CardTags.TagID
                             
-                            %s
+                            WHERE (%s) AND (%s) AND (%s)
                         )
                         ;
-                """, condition);
-        System.out.println(qry);
+                """, tagCondition, setCondition, keywordCondition);
+
+        //WHERE (%s) AND (%s) AND (%s)
         ArrayList<Card> cards = new ArrayList<Card>();
 
+        // get all cards with given tags, sets and keywords
         try (
             Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(qry);
+            PreparedStatement st = conn.prepareStatement(qry);
+            
         )
         {
+            int paramCount = 1;
+
+            for (String t: tags){
+                st.setString(paramCount, t);
+                paramCount ++;
+            }
+            for (String s: sets){
+                st.setString(paramCount, s);
+                paramCount ++;
+            }
+            for (int i = paramCount; i <paramCount + 3; i++){
+                st.setString(i, "%" + keyword + "%");
+            }
+
+            ResultSet rs = st.executeQuery();
             while (rs.next()){
 
                 int id = rs.getInt("CardID");
                 String title = rs.getString("Title");
                 String set = rs.getString("CardSet");
-
+                System.out.println(title);
                 cards.add(new Card(id, title, set));
+ 
             }
+            rs.close();
+            st.close();
+            conn.close();
         }
         catch (SQLException e){
             cards.add(new Card(0, "Could not load Cards", ""));
@@ -187,6 +214,8 @@ public class DB {
 
 
     public static Card getCard(int id){
+
+        
         return new Card(id, "HTML and CSS", "Web Dev", "What are the main html tags?", "p, h1-h6, br, div, span, a", 0);
 
     }
