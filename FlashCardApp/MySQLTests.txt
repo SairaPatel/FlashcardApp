@@ -39,6 +39,7 @@ SELECT * FROM Cards WHERE CardID IN
         INNER JOIN Tags ON Tags.TagID = CardTags.TagID
 
         WHERE Tags.Name IN ("Hardware", "Storage")
+        
     )
 ;
 

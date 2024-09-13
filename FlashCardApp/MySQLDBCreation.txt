@@ -1,5 +1,5 @@
 Code for creating database tables:
-
+FlashcardDB
 
 CREATE TABLE Cards (
 	CardID int NOT NULL AUTO_INCREMENT,

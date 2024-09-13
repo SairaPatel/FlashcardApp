@@ -10,21 +10,30 @@ public class Card {
     private double rating;
 
     Card(int ID, String t, String s, String[] tags, String f, String b, double r){
-        updateCardContent(t, s, f, b);
+        title = t;
+        front = f;
+        back = b;
+        set = s;
         rating = r;
         this.tags = tags;
     }
 
-    Card(int ID, String t, String s, String f, String b, double r){
-        updateCardContent(t, s, f, b);
-        tags = new String[0]; 
+    // check if actually needed?
+    Card(int ID, String t, String s, String f, String b, double r) {
+        title = t;
+        front = f;
+        back = b;
+        set = s;
         rating = r;
+        tags = new String[0]; 
     }
 
-    Card(int ID){
-        new Card(ID, "", "", "", "", -1);
+    Card(int ID, String t, String s){
+        title = t;
+        set = s;
+        tags = new String[0]; 
+        rating = 0;
     }
-    
 
     public void updateRating(int val){
         if (rating == -1){
@@ -34,15 +43,8 @@ public class Card {
             rating = (rating + val)/2;
         }
     }
-    
-    
-
-    public void updateCardContent(String t, String s, String f, String b){
-        title = t;
-        front = f;
-        back = b;
-        set = s;
-    }
+        
+   
 
 
     // getters

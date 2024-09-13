@@ -155,7 +155,7 @@ public class HomePage extends JPanel{
     public ActionListener applyClickedListener = new ActionListener() {
         public void actionPerformed(ActionEvent e){
             String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
-            String[] sets = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+            String[] sets = setsList.getSelectedValuesList().toArray(new String[setsList.getSelectedIndices().length]);
             controller.loadFilteredCardHeaders(tags,sets, keywordInput.getText());
             
             reloadCards();
@@ -195,7 +195,7 @@ public class HomePage extends JPanel{
     public ActionListener studyAllClickedListener = new ActionListener() {
         public void actionPerformed(ActionEvent e){
             String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
-            String[] sets = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+            String[] sets = setsList.getSelectedValuesList().toArray(new String[setsList.getSelectedIndices().length]);
             controller.loadFilteredCards(tags,sets, keywordInput.getText(), randomRadio.isSelected());
             
             controller.switchToLearn();

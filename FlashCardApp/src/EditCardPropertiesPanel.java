@@ -130,6 +130,10 @@ public class EditCardPropertiesPanel extends JPanel{
         titleInput.setText(title);
         setInput.setSelectedItem(set);
 
+        setsComboModel.removeAllElements();
+        tagsComboModel.removeAllElements();
+        tagsListModel.removeAllElements();
+
         for (String s: allSets){
             setsComboModel.addElement(s);
         }
