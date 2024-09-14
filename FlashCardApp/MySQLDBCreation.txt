@@ -1,5 +1,6 @@
-Code for creating database tables:
-FlashcardDB
+DB Name: FlashcardDB
+
+Code for creating DB Tables:
 
 CREATE TABLE Cards (
 	CardID int NOT NULL AUTO_INCREMENT,
@@ -11,18 +12,15 @@ CREATE TABLE Cards (
 	PRIMARY KEY (CardID)
 	
 	);
-	
-	
-	
+------------------------------------------------------
 CREATE TABLE Tags (
 	TagID int NOT NULL AUTO_INCREMENT ,
 	Name varchar(255) NOT NULL,
 	PRIMARY KEY (TagID)
-	
 	);
-	
-	
-	
+-----------------------
+ALTER TABLE Tags ADD UNIQUE (Name);
+------------------------------------------------------
 CREATE TABLE CardTags (
 	CardID int,
 	TagID int,
@@ -31,6 +29,6 @@ CREATE TABLE CardTags (
 	FOREIGN KEY (TagID) REFERENCES Tags(TagID) ON DELETE CASCADE
 
 	);
-
+------------------------------------------------------
 
 

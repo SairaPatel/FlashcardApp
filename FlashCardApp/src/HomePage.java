@@ -82,6 +82,7 @@ public class HomePage extends JPanel{
         add(clearButton, clearButtonGBC);
 
         // clear button click action listener
+        // NOTE - Clearing filters may show different results than Applying Filter with none selected (since applying no filters will exclude cards that are not tagged - COULD ADD A 'not tagged filter')
         clearButton.addActionListener(clearClickedListener);
 
         // cards list
@@ -96,13 +97,24 @@ public class HomePage extends JPanel{
 
         // card item click action listener
         cardsList.addMouseListener(cardClickedListener);
+        cardsList.addKeyListener(deleteKeyListener);
 
+
+        // New card button
+        JButton newButton = new JButton("Add New Card");        
+
+        GridBagConstraints newButtonGBC = UIController.getGBC(0, 6, 1,0);
+        newButtonGBC.gridwidth = 2;
+        add(newButton, newButtonGBC);
+
+        // add card button click action listener
+        newButton.addActionListener(newClickedListener);
 
 
         // order radio buttons
         JPanel orderPanel = new JPanel();
 
-        GridBagConstraints orderPanelGBC = UIController.getGBC(0, 6, 1, 0);
+        GridBagConstraints orderPanelGBC = UIController.getGBC(0, 7, 1, 0);
         orderPanelGBC.gridwidth = 2;
         add(orderPanel, orderPanelGBC);
 
@@ -124,16 +136,13 @@ public class HomePage extends JPanel{
         // study button
         JButton studyButton = new JButton("Study These Cards");        
 
-        GridBagConstraints studyButtonGBC = UIController.getGBC(0, 7, 1,0);
+        GridBagConstraints studyButtonGBC = UIController.getGBC(0, 8, 1,0);
         studyButtonGBC.gridwidth = 2;
         add(studyButton, studyButtonGBC);
 
         studyButton.addActionListener(studyAllClickedListener);
 
-
-
-        resetInputs();
-
+        resetPage();
 
         // set layout
         setSize(400, 300);
@@ -156,8 +165,8 @@ public class HomePage extends JPanel{
         public void actionPerformed(ActionEvent e){
             String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
             String[] sets = setsList.getSelectedValuesList().toArray(new String[setsList.getSelectedIndices().length]);
-            controller.loadFilteredCardHeaders(tags,sets, keywordInput.getText());
             
+            controller.loadFilteredCardHeaders(tags,sets, keywordInput.getText());
             reloadCards();
         }
     };
@@ -167,19 +176,30 @@ public class HomePage extends JPanel{
 
     public ActionListener clearClickedListener = new ActionListener() {
         public void actionPerformed(ActionEvent e){
-            resetInputs();
+            resetPage();
         }
     };
+
 
     public void resetInputs(){
         tagsList.setListData(controller.getTags());
         setsList.setListData(controller.getSets());
         keywordInput.setText("");
+    }
 
+    public void resetPage(){
+        resetInputs();
         controller.loadCardHeaders();
-
         reloadCards();
     }
+
+    // new button clicked listener
+    public ActionListener newClickedListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            controller.addNewCard();
+        }
+    };
+
 
     // card list item clicked listener
     MouseAdapter cardClickedListener = new MouseAdapter() {
@@ -188,6 +208,16 @@ public class HomePage extends JPanel{
                 controller.editCardAtIndex(cardsList.getSelectedIndex());
             }
         }
+    };
+
+    // delete key pressed - delete selected cards
+    KeyAdapter deleteKeyListener = new KeyAdapter() {
+        public void keyPressed(KeyEvent e){
+            if (e.getKeyCode() == KeyEvent.VK_DELETE){
+                controller.deleteCardsAtIndices(cardsList.getSelectedIndices());
+                resetPage();
+            }
+        };
     };
     
 

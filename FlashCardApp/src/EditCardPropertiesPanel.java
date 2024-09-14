@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.RenderingHints.Key;
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -134,7 +133,7 @@ public class EditCardPropertiesPanel extends JPanel{
         
         
         // tags list delete button pressed listener
-        tagsList.addKeyListener(new KeyListener() {
+        tagsList.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e){
                 if (tagsList.getSelectedIndex() > -1 && e.getKeyCode() == KeyEvent.VK_DELETE){
                     for (String s: tagsList.getSelectedValuesList()){
@@ -151,16 +150,12 @@ public class EditCardPropertiesPanel extends JPanel{
                     }
                 }
             }
-            public void keyTyped(KeyEvent e){}
-            public void keyPressed(KeyEvent e){}
         });
 
     }
 
     public void setProperties(String title, String set, String[] tags, String[] allSets, String[] allTags){
-        titleInput.setText(title);
-        setInput.setSelectedItem(set);
-
+        
         setsComboModel.removeAllElements();
         tagsComboModel.removeAllElements();
         tagsListModel.removeAllElements();
@@ -176,6 +171,8 @@ public class EditCardPropertiesPanel extends JPanel{
         for (String tag: tags){
             tagsListModel.addElement(tag);
         }
+        titleInput.setText(title);
+        setInput.setSelectedItem(set);
     }
 
 

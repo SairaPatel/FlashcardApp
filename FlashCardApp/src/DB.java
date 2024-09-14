@@ -3,6 +3,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping;
+import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
 
 public class DB {
 
@@ -24,29 +25,46 @@ public class DB {
     //     return cards;
 
     // }
-    public static String arrayToString(String[] words){
-        if (words.length == 0){
-            return "()";
-        }
+    
 
-        String out = "(";
-        for (int i = 0; i < words.length -1; i ++){
-            out += "'" + words[i] +  "', ";
-        }
-        out += "'" + words[words.length -1] + "')";
-        return out;
+    public static String arrayToWildcardString(int length){
+        return arrayToWildcardString(length, 0);
     }
+    /* generate a string containing wildcards for each column in list of given length
+     *  e.g. len 3 -> '(?, ?, ?)'
+     * 
+     * where a column > 1 is given: each row is a list of wildcards
+     * e.g. len 3, cols 2 -> '((?, ?), (?, ?), (?, ?))'
+     * used for inserting multiple rows (of multiple column values) into a table
+     */
+    public static String arrayToWildcardString(int length, int columns){
+        // generate a string containing wildcards for each item in list of given length
+        // e.g. 3-> '(?, ?, ?)'
 
-    public static String arrayToWildcardString(String[] words){
-        if (words.length == 0){
+        // for separate rows, each wildcard is placed within brackets: (?) instead of ?
+
+
+        if (length == 0){
             return "()";
         }
-
         String out = "(";
-        for (int i = 0; i < words.length -1; i ++){
-            out += "?, ";
+        for (int i = 0; i < length -1; i ++){
+            if (columns == 0){
+                out += "?, ";
+            }
+            else{
+                out += arrayToWildcardString(columns) + ", ";
+            }
+            
         }
-        out += "?)";
+
+        if (columns == 0){
+            out += "?)";
+        }
+        else{
+            out += arrayToWildcardString(columns) + ")";
+        }
+
         return out;
     }
 
@@ -54,7 +72,7 @@ public class DB {
         
         // get all cards' id, title and set
 
-        String qry = "SELECT CardID, Title, CardSet FROM Cards ";
+        String qry = "SELECT CardID, Title, CardSet FROM Cards ;";
         ArrayList<Card> cards = new ArrayList<Card>();
         
 
@@ -87,7 +105,7 @@ public class DB {
     }
 
     public static String[] getAllSets(){
-        String qry = "SELECT DISTINCT CardSet FROM Cards";
+        String qry = "SELECT DISTINCT CardSet FROM Cards;";
         ArrayList<String> sets = new ArrayList<String>();
 
         try (
@@ -114,7 +132,7 @@ public class DB {
     }
 
     public static String[] getAllTags(){
-        String qry = "SELECT name FROM Tags";
+        String qry = "SELECT Name FROM Tags;";
         ArrayList<String> tags= new ArrayList<String>();
 
         try(
@@ -143,13 +161,13 @@ public class DB {
         
         // build condition
         
-        String tagCondition = "Tags.Name IN " + arrayToWildcardString(tags);
+        String tagCondition = "Tags.Name IN " + arrayToWildcardString(tags.length);
         if (tags.length == 0){
             tagCondition =  "TRUE";
         }
         
 
-        String setCondition = "CardSet IN " + arrayToWildcardString(sets);
+        String setCondition = "CardSet IN " + arrayToWildcardString(sets.length);
         if (sets.length == 0){
             setCondition = "TRUE";
         }
@@ -230,7 +248,7 @@ public class DB {
     public static Card getCardProperties(int id){
 
         // get card content and ratings 
-        String qry = "SELECT Title, CardSet, Front, Back, Rating FROM Cards WHERE CardID = ?";
+        String qry = "SELECT Title, CardSet, Front, Back, Rating FROM Cards WHERE CardID = ?;";
         Card c = new Card(id, "", "", new String[0], "", "", 0);;
 
         try (
@@ -248,6 +266,7 @@ public class DB {
                 String front = rs.getString("Front");
                 String back = rs.getString("Back");
                 Float rating = rs.getFloat("Rating");
+                
                 
                 c.setProperties(title, set, front, back, rating);
             }
@@ -309,6 +328,63 @@ public class DB {
 
     }
 
+    public static int insertCard(){
+        String qry = "INSERT INTO Cards (Title, CardSet, Front, Back, Rating) VALUES ('Untitled', 'My Set', '','', 0 );";
+        String qry2 = "SELECT LAST_INSERT_ID();";
+
+        int id = -1;
+
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            Statement st = conn.createStatement();
+
+        )
+        {
+            // insert card
+            st.executeUpdate(qry);
+
+            // get id
+            ResultSet rs = st.executeQuery(qry2);
+            while (rs.next()){
+                id = rs.getInt(1);
+            }
+
+            st.close();
+            conn.close();
+            
+        }
+        catch (SQLException e){
+            System.out.println(e.getMessage());
+            
+        }
+        System.out.println(id);
+        return id;
+    }
+
+    public static void deleteCards(int[] ids){
+        // delete all cards with listed IDs
+        String qry = String.format("DELETE FROM Cards WHERE CardID IN %s", arrayToWildcardString(ids.length));
+        
+        try (
+            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            PreparedStatement st = conn.prepareStatement(qry);
+        )
+        {
+            // bind ids to query
+            for (int i = 0; i < ids.length; i++){
+                st.setInt(i+1, ids[i]);
+            }
+
+            st.executeUpdate();
+
+            st.close();
+            conn.close();
+        }
+        catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     public static void updateCard(int id, String title, String set, ArrayList<String> addedTags, ArrayList<String> removedtags, String front, String back){
         // UPDATE CARD
@@ -337,6 +413,8 @@ public class DB {
 
 
         // INSERT ADDED TAGS (to Tags and CardTags tables)
+        
+
 
         // DELETE REMOVED TAGS (from Tags and CardTags tables)
         

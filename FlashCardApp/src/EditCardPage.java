@@ -73,6 +73,7 @@ public class EditCardPage extends JPanel{
     public void loadCard(){
         Card c = controller.getCurrentCard();
 
+        
         sidePanel.setProperties(c.getTitle(), c.getSet(), c.getTags(), controller.getSets(), controller.getTags());
         cardsPanel.setContent(c.getFront(), c.getBack());
     }

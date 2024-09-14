@@ -24,13 +24,13 @@ public class UIController {
     }
     public void switchToHome(){
         currentCardIndex = 0;
-        loadCardHeaders();
-        homePage.reloadCards();
+        homePage.resetPage();
         cardLayout.show( root,"home");
     }
 
     public void switchToEdit(){
         currentCardIndex = 0;
+        editPage.loadCard();
         cardLayout.show( root,"edit");
     }
 
@@ -93,6 +93,34 @@ public class UIController {
         
     }
 
+    // insert new card and switch to edit page
+    public void addNewCard(){
+        int id = DB.insertCard();
+
+        Card c = DB.getCard(id);
+
+        cards = new ArrayList<Card>();
+        cards.add(c);
+        System.out.println(c.toString());
+        switchToEdit();
+        
+    }
+
+    public void deleteCardsAtIndices(int[] indices){
+        
+        // get card IDs
+        int[] ids = new int[indices.length];
+
+        for (int j = 0; j< ids.length; j ++){
+            ids[j] = cards.get(indices[j]).getID();
+        }
+
+        // delete cards
+        DB.deleteCards(ids);
+        
+        
+    }
+
     
     // home page click card
     public void editCardAtIndex(int index){
@@ -102,10 +130,7 @@ public class UIController {
 
         cards = new ArrayList<Card>();
         cards.add(c);
-
         switchToEdit();
-        editPage.loadCard();
-        // EditPage.loadCurrentCard()
         
     }
 
