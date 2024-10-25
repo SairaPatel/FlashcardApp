@@ -83,7 +83,7 @@ public class Controller {
         String[] titles = new String[cards.size()];
 
         for (int i = 0; i < cards.size(); i++){
-            titles[i] = String.format("%s: %s",cards.get(i).getTitle() , cards.get(i).getSet());
+            titles[i] = String.format("%s - %s",cards.get(i).getSet(), cards.get(i).getTitle());
         }
         return titles;
     }
