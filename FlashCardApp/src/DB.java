@@ -349,7 +349,6 @@ public class DB {
         // INSERT ADDED TAGS
         if (addedTags.size() > 0){
             String addTagsQry = String.format("INSERT INTO CardTags (CardId, Tag) VALUES %s;", generateWildcardStr( 2, addedTags.size()));
-            System.out.format("tags added : %d \n query: %s ", addedTags.size(), addTagsQry);
             try (
                 Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
                 PreparedStatement st = conn.prepareStatement(addTagsQry);
@@ -381,7 +380,6 @@ public class DB {
         if (removedtags.size() > 0){
             String deleteTagsQry ="DELETE FROM CardTags WHERE CardID = ? AND Tag = ?";
             int paramCount = 1;
-            System.out.format("tags deleted : %d \n query: %s ", removedtags.size(), deleteTagsQry);
             for (String t: removedtags){
     
                 try (

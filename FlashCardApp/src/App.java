@@ -22,7 +22,6 @@ public class App extends JFrame{
 
         controller.setPages(home, edit, learn);
 
-        
         add(mainPanel, BorderLayout.CENTER);
 
         // set layout

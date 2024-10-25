@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.awt.event.*;
-import java.lang.Math;
 
 public class LearnCardPanel extends JPanel{
 
@@ -134,7 +133,8 @@ public class LearnCardPanel extends JPanel{
         backContent.setText(back);
         userInput.setText("");
 
-        ratingButtons[(int)rating].setSelected(true);
+        
+        ratingButtons[Math.round(rating)].setSelected(true);
 
         revealButton.setText("Show Content");
         backContentPanel.setVisible(false);

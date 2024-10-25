@@ -149,6 +149,7 @@ public class HomePage extends JPanel{
 
     // PAGE/CARD UPDATE FUNCS
 
+    
     // reloads all current card titles and their sets
     public void reloadCards(){
         String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);

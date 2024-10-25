@@ -6,7 +6,6 @@ public class Card {
     private String back;
     private String set;
     private String[] tags;
-
     private float rating;
 
     // constructors
