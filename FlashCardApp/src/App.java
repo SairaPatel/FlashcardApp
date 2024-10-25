@@ -8,8 +8,6 @@ public class App extends JFrame{
     JFrame f;
 
     public App(){
-        // setLayout(new GridBagLayout());
-        
 
         // card layout panel
         CardLayout cardLayout = new CardLayout();
@@ -38,28 +36,14 @@ public class App extends JFrame{
         });
 
         // set layout
-        
         setSize(420, 500);
         setVisible(true);
-
-
-
-        
     }   
     
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         
-        // new EditCardPage();
-        // new LearnPage();
-        // new HomePage();
         new App();
-
-        
-
-
-
-
         
     }
 }

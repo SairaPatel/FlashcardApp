@@ -39,8 +39,6 @@ public class LearnCardPanel extends JPanel{
         frontGBC.fill = GridBagConstraints.BOTH;
         add(frontPane, frontGBC);
 
-        
-        
 
         // back panel
         backContent = new JTextArea("card's back content");
@@ -95,8 +93,6 @@ public class LearnCardPanel extends JPanel{
         });
 
         add(revealButton, revealButtonGBC);
-
-
 
 
         // rating label

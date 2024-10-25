@@ -34,9 +34,7 @@ public class LearnPage extends JPanel{
 
         // progress bar
         progressBar = new JProgressBar(0, 30);
-        // progressBar.setValue(1);
         progressBar.setStringPainted(true);
-        // progressBar.setString(String.format("%1d of %2d", progressBar.getValue() ,progressBar.getMaximum()));
 
         GridBagConstraints barGBC = UIController.getGBC(0, 1);
         add(progressBar, barGBC);
@@ -103,8 +101,5 @@ public class LearnPage extends JPanel{
             
         }
     };
-
-    
-    
 
 }

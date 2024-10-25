@@ -32,3 +32,15 @@ CREATE TABLE CardTags (
 ------------------------------------------------------
 
 
+update 25/10
+DROP TABLE CardTags;
+DROP TABLE Tags;
+
+
+CREATE TABLE CardTags(
+	CardID int,
+	Tag varchar(255),
+	PRIMARY KEY(CardID, Tag),
+	FOREIGN KEY (CardID) REFERENCES Cards(CardID) ON DELETE CASCADE
+);
+

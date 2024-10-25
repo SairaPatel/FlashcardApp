@@ -55,7 +55,6 @@ public class EditCardPropertiesPanel extends JPanel{
         
 
         // TAGS -------------------------
-        // String[] tags = {"Storage", "Secondary Storage and Primary Storage", "HDD", "Memory", "HDD", "Memory", "HDD", "Memory"};
         
         // add tag label
         JLabel addLabel = new JLabel("Add Tag:");
@@ -102,7 +101,6 @@ public class EditCardPropertiesPanel extends JPanel{
                     
                     }
                     addInput.setSelectedIndex(-1);
-    
                 }
                 
             }
@@ -121,8 +119,7 @@ public class EditCardPropertiesPanel extends JPanel{
         JList<String> tagsList = new JList<String>(tagsListModel);
         JScrollPane tagsListPane = new JScrollPane(tagsList);
 
-        
-
+    
         tagsListPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         tagsListPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -130,7 +127,6 @@ public class EditCardPropertiesPanel extends JPanel{
         tagsGBC.fill = GridBagConstraints.BOTH;
         add(tagsListPane, tagsGBC);
 
-        
         
         // tags list delete button pressed listener
         tagsList.addKeyListener(new KeyAdapter() {
@@ -159,6 +155,8 @@ public class EditCardPropertiesPanel extends JPanel{
         setsComboModel.removeAllElements();
         tagsComboModel.removeAllElements();
         tagsListModel.removeAllElements();
+        addedTags.clear();
+        removedTags.clear();
 
         for (String s: allSets){
             setsComboModel.addElement(s);

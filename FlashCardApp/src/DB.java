@@ -26,47 +26,43 @@ public class DB {
 
     // }
     
-
-    public static String arrayToWildcardString(int length){
-        return arrayToWildcardString(length, 0);
-    }
-    /* generate a string containing wildcards for each column in list of given length
-     *  e.g. len 3 -> '(?, ?, ?)'
-     * 
-     * where a column > 1 is given: each row is a list of wildcards
-     * e.g. len 3, cols 2 -> '((?, ?), (?, ?), (?, ?))'
-     * used for inserting multiple rows (of multiple column values) into a table
+    /*
+     * Generates a string  containing a tuple of n question marks/wildcards
+     * i.e. 2 -> '(?, ?)'
+     * @param length the number of wildcards to be in the tuple 
      */
-    public static String arrayToWildcardString(int length, int columns){
-        // generate a string containing wildcards for each item in list of given length
-        // e.g. 3-> '(?, ?, ?)'
-
-        // for separate rows, each wildcard is placed within brackets: (?) instead of ?
-
-
+    public static String generateWildcardStr(int length){
         if (length == 0){
             return "()";
         }
+
         String out = "(";
-        for (int i = 0; i < length -1; i ++){
-            if (columns == 0){
-                out += "?, ";
-            }
-            else{
-                out += arrayToWildcardString(columns) + ", ";
-            }
-            
+        for (int i = 0; i < length -1; i++){
+            out += "?, ";
         }
-
-        if (columns == 0){
-            out += "?)";
-        }
-        else{
-            out += arrayToWildcardString(columns) + ")";
-        }
-
+        out += "?)";
         return out;
     }
+
+    /*
+     * Generates a string  containing a list of comma-separated tuples - each of n question marks/wildcards
+     * i.e. 2, 3 -> '(?, ?), (?, ?), (?, ?)'
+     * @param length - the number of wildcards to be in each tuple 
+     * @param count - the number of tuples to be in the string
+     */
+    public static String generateWildcardStr(int length, int count){
+        if (count == 0){
+            return "";
+        }
+        
+        String out = "";
+        for (int i = 0; i < count -1; i ++){
+            out += generateWildcardStr(length) + ", ";
+        }
+        out += generateWildcardStr(length);
+        return out;
+    }
+
 
     public static ArrayList<Card> getAllCards(){
         
@@ -132,7 +128,7 @@ public class DB {
     }
 
     public static String[] getAllTags(){
-        String qry = "SELECT Name FROM Tags;";
+        String qry = "SELECT DISTINCT Tag FROM CardTags;";
         ArrayList<String> tags= new ArrayList<String>();
 
         try(
@@ -142,7 +138,7 @@ public class DB {
         )
         {
             while (rs.next()){
-                tags.add(rs.getString("Name"));
+                tags.add(rs.getString("Tag"));
             }
 
             rs.close();
@@ -161,13 +157,12 @@ public class DB {
         
         // build condition
         
-        String tagCondition = "Tags.Name IN " + arrayToWildcardString(tags.length);
+        String tagCondition = "CardTags.Tag IN " + generateWildcardStr(tags.length);
         if (tags.length == 0){
             tagCondition =  "TRUE";
         }
-        
 
-        String setCondition = "CardSet IN " + arrayToWildcardString(sets.length);
+        String setCondition = "CardSet IN " + generateWildcardStr(sets.length);
         if (sets.length == 0){
             setCondition = "TRUE";
         }
@@ -187,8 +182,7 @@ public class DB {
                         SELECT DISTINCT Cards.CardID
 
                             FROM CardTags
-                            INNER JOIN Cards ON Cards.CardID = CardTags.CardID
-                            INNER JOIN Tags ON Tags.TagID = CardTags.TagID
+                            RIGHT OUTER JOIN Cards ON Cards.CardID = CardTags.CardID
                             
                             WHERE (%s) AND (%s) AND (%s)
 
@@ -198,7 +192,6 @@ public class DB {
                         ;
                 """, tagCondition, setCondition, keywordCondition, order);
 
-        System.out.println(qry);
         ArrayList<Card> cards = new ArrayList<Card>();
 
         // get all cards with given tags, sets and keywords
@@ -291,16 +284,8 @@ public class DB {
         Card c = getCardProperties(id);
 
         // get tags
-        String qry = """
-                SELECT Tags.Name
+        String qry = "SELECT Tag FROM CardTags WHERE CardID = ? ;";
 
-                    FROM CardTags
-                    INNER JOIN Cards ON Cards.CardID = CardTags.CardID
-                    INNER JOIN Tags ON Tags.TagID = CardTags.TagID
-
-                    WHERE Cards.CardID = ?
-                    ;
-                """;
         ArrayList<String> tags = new ArrayList<String>();
         try(
             Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -311,7 +296,7 @@ public class DB {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()){
-                tags.add( rs.getString("Name"));
+                tags.add( rs.getString("Tag"));
             }
             rs.close();
             st.close();
@@ -363,7 +348,7 @@ public class DB {
 
     public static void deleteCards(int[] ids){
         // delete all cards with listed IDs
-        String qry = String.format("DELETE FROM Cards WHERE CardID IN %s", arrayToWildcardString(ids.length));
+        String qry = String.format("DELETE FROM Cards WHERE CardID IN %s", generateWildcardStr(ids.length));
         
         try (
             Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -411,14 +396,78 @@ public class DB {
             System.out.println(e.getMessage());
         }
 
+        System.out.println("ADDED: ");
+        for (String t: addedTags){
+            System.out.println(t);
+        }
+        System.out.println("REMOVED: ");
+        for (String t: removedtags){
+            System.out.println(t);
+        }
 
-        // INSERT ADDED TAGS (to Tags and CardTags tables)
+
+        // INSERT ADDED TAGS
+        if (addedTags.size() > 0){
+            String addTagsQry = String.format("INSERT INTO CardTags (CardId, Tag) VALUES %s;", generateWildcardStr( 2, addedTags.size()));
+            System.out.format("tags added : %d \n query: %s ", addedTags.size(), addTagsQry);
+            try (
+                Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                PreparedStatement st = conn.prepareStatement(addTagsQry);
+            )
+            {
+                int paramCount = 1;
+
+                // bind id's and tag names
+                for (String t: addedTags){
+                    System.out.println(t);
+                    st.setInt(paramCount, id);
+                    paramCount ++;
+                    st.setString(paramCount, t);
+                    paramCount ++;
+                }
+
+                st.executeUpdate();
+
+                st.close();
+                conn.close();
+            }
+            catch (SQLException e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
         
-
-
-        // DELETE REMOVED TAGS (from Tags and CardTags tables)
         
-
+        // DELETE REMOVED TAGS
+        if (removedtags.size() > 0){
+            String deleteTagsQry ="DELETE FROM CardTags WHERE CardID = ? AND Tag = ?";
+            int paramCount = 1;
+            System.out.format("tags deleted : %d \n query: %s ", removedtags.size(), deleteTagsQry);
+            for (String t: removedtags){
+    
+                try (
+                Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                PreparedStatement st = conn.prepareStatement(deleteTagsQry);
+                )
+                {
+                    
+                    st.setInt(paramCount, id);
+                    paramCount ++;
+                    st.setString(paramCount, t);
+                    paramCount ++;
+    
+                    st.executeUpdate();
+                    st.close();
+                    conn.close();
+                }
+                catch (SQLException e)
+                {
+                    System.out.println(e.getMessage());
+                }
+    
+            }
+        }
+       
     }
 
     public static void setCardRating(int id, float rating){
