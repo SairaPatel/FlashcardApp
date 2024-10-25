@@ -44,14 +44,7 @@ They can then **click to reveal the card's _back_ contents (answers)**.
 After studying each card, the user can **rate their _knowledge_** of the card which will be stored for next time. 
 
 
-## Future ##
-
-### Not Completed Yet ###
-- Implement adding/deleting tags to a card
-- Restructure database table Tag to remove redundant attribute TagID (since Tag Name is unique)
-  - possibly restructure database to not include a Tag table and instead just store Tag Name as an attribute in CardTag table
-  
-### Possible Additional Changes/Features ### 
+## Possible Future Changes ##
 - Add ability to change filter mode from using AND to OR (at the moment the default is AND. i.e. all filters must apply for a card to be part of the results)
 - Add an "untagged" tag automatically to cards with no tags, so that they can be filtered separately
   - since, currently they are excluded if the user selects nothing and clicks 'Apply Filters'
