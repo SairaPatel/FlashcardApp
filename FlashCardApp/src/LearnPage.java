@@ -4,14 +4,14 @@ import java.awt.event.*;
 
 public class LearnPage extends JPanel{
 
-    private UIController controller;
+    private Controller controller;
 
     private JProgressBar progressBar;
     private LearnCardPanel card;
 
     private JButton nextButton;
 
-    LearnPage(UIController c){
+    LearnPage(Controller c){
         controller =c;
         
         setLayout(new GridBagLayout());
@@ -19,7 +19,7 @@ public class LearnPage extends JPanel{
         // quit button
         JButton quitButton = new JButton("Quit");
 
-        GridBagConstraints quitGBC = UIController.getGBC(0, 1);
+        GridBagConstraints quitGBC = Controller.getGBC(0, 1);
         quitGBC.anchor = GridBagConstraints.LINE_START;
         quitGBC.fill = GridBagConstraints.NONE;
         add(quitButton, quitGBC);
@@ -36,13 +36,13 @@ public class LearnPage extends JPanel{
         progressBar = new JProgressBar(0, 30);
         progressBar.setStringPainted(true);
 
-        GridBagConstraints barGBC = UIController.getGBC(0, 1);
+        GridBagConstraints barGBC = Controller.getGBC(0, 1);
         add(progressBar, barGBC);
         
         // learn card panel
         card = new LearnCardPanel();
 
-        GridBagConstraints cardGBC = UIController.getGBC(0, 2, 1, 1);
+        GridBagConstraints cardGBC = Controller.getGBC(0, 2, 1, 1);
         cardGBC.fill = GridBagConstraints.BOTH;
         add(card, cardGBC);
 
@@ -50,7 +50,7 @@ public class LearnPage extends JPanel{
 
         // next button
         nextButton = new JButton("Next");
-        GridBagConstraints nextGBC = UIController.getGBC(0, 3);
+        GridBagConstraints nextGBC = Controller.getGBC(0, 3);
         add(nextButton, nextGBC);
 
         nextButton.addActionListener(nextClickedListener);

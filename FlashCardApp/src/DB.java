@@ -2,8 +2,6 @@
 import java.sql.*;
 import java.util.ArrayList;
 
-import com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping;
-import com.mysql.cj.x.protobuf.MysqlxPrepare.Prepare;
 
 public class DB {
 
@@ -11,21 +9,6 @@ public class DB {
     static final String USER = "root";
     static final String PASS = "root";
 
-    
-
-    // private static ArrayList<Card> getCards(){
-
-
-    //     ArrayList<Card> cards = new ArrayList<Card>();
-    //     cards.add(new Card(0, "CSS", "WebDev", "Write some stule tags", "<style></style>",0.3));
-    //     cards.add(new Card(2, "HTMl","WebDev", "write some basic semantic tags", "<p><p><h1></h1>",5.5));
-    //     cards.add(new Card(3, "Security","WebDev", "what is a security threat?", "SQL injection",2));
-    //     cards.add(new Card(5, "JQuery", "WebDev","What is jquery for?", "easier to read/write than pure javascript",1));
-
-    //     return cards;
-
-    // }
-    
     /*
      * Generates a string  containing a tuple of n question marks/wildcards
      * i.e. 2 -> '(?, ?)'
@@ -63,42 +46,6 @@ public class DB {
         return out;
     }
 
-
-    public static ArrayList<Card> getAllCards(){
-        
-        // get all cards' id, title and set
-
-        String qry = "SELECT CardID, Title, CardSet FROM Cards ;";
-        ArrayList<Card> cards = new ArrayList<Card>();
-        
-
-        try(
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(qry);
-        )
-        {
-            while (rs.next()){
-                int id = rs.getInt("CardID");
-                String title = rs.getString("Title");
-                String set = rs.getString("CardSet");
-
-                
-                cards.add(new Card(id, title, set));
-            }
-
-            rs.close();
-            st.close();
-            conn.close();
-        }
-        catch ( SQLException e){
-            System.out.println(e.getMessage());
-            cards.add(new Card(0, "Could not load cards", ""));
-        }
-
-        // select card titles, sets, (tagsREMOVE) and ids ONLYYYYYYYYYYYYYYYYYYYYYYYYYYY
-        return cards;
-    }
 
     public static String[] getAllSets(){
         String qry = "SELECT DISTINCT CardSet FROM Cards;";
@@ -153,7 +100,7 @@ public class DB {
         return tags.toArray(new String[tags.size()]);
     }
 
-    public static ArrayList<Card> getSomeCards(String[] tags, String[] sets, String keyword, boolean orderRandomly){
+    public static ArrayList<Card> getSomeCards(String[] tags, String[] sets, String keyword, boolean orderByKnowledge){
         
         // build condition
         
@@ -169,28 +116,25 @@ public class DB {
        
         String keywordCondition = "Cards.Title LIKE ? OR Cards.Front LIKE ? OR Cards.Back LIKE ?";
         
-        String order = "ORDER BY Rating ASC";
-        if (orderRandomly){
-            order = "ORDER BY rand()";
+        String order = "ORDER BY rand()";
+        if (orderByKnowledge){
+            order = "ORDER BY Rating ASC";
         }
 
         // build query
         String qry = String.format("""
-                SELECT CardID, Title, CardSet FROM Cards WHERE CardID IN
-                        (
-
-                        SELECT DISTINCT Cards.CardID
-
-                            FROM CardTags
-                            RIGHT OUTER JOIN Cards ON Cards.CardID = CardTags.CardID
+                    SELECT DISTINCT Cards.CardID, Cards.Title, Cards.CardSet, Cards.Rating
+    
+                                FROM CardTags
+                                RIGHT OUTER JOIN Cards ON Cards.CardID = CardTags.CardID
+                                
+                                WHERE (%s) AND (%s) AND (%s)
+    
+                                
                             
-                            WHERE (%s) AND (%s) AND (%s)
-
-                            
-                        )
-                        %s
-                        ;
-                """, tagCondition, setCondition, keywordCondition, order);
+                            %s
+                            ;
+                    """, tagCondition, setCondition, keywordCondition, order);
 
         ArrayList<Card> cards = new ArrayList<Card>();
 
@@ -242,7 +186,7 @@ public class DB {
 
         // get card content and ratings 
         String qry = "SELECT Title, CardSet, Front, Back, Rating FROM Cards WHERE CardID = ?;";
-        Card c = new Card(id, "", "", new String[0], "", "", 0);;
+        Card c = new Card(id);;
 
         try (
             Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -313,6 +257,7 @@ public class DB {
 
     }
 
+    // add 'default' card with empty/default values
     public static int insertCard(){
         String qry = "INSERT INTO Cards (Title, CardSet, Front, Back, Rating) VALUES ('Untitled', 'My Set', '','', 0 );";
         String qry2 = "SELECT LAST_INSERT_ID();";
@@ -342,9 +287,9 @@ public class DB {
             System.out.println(e.getMessage());
             
         }
-        System.out.println(id);
         return id;
     }
+
 
     public static void deleteCards(int[] ids){
         // delete all cards with listed IDs
@@ -371,8 +316,10 @@ public class DB {
     }
 
 
+    // update card editable properties and tags
     public static void updateCard(int id, String title, String set, ArrayList<String> addedTags, ArrayList<String> removedtags, String front, String back){
-        // UPDATE CARD
+        
+        // UPDATE CARD PROPERTIES in Cards table
         String qry = "UPDATE Cards SET Title = ?, CardSet = ?, Front = ?, Back = ? WHERE CardID = ?";
 
         try (
@@ -396,14 +343,7 @@ public class DB {
             System.out.println(e.getMessage());
         }
 
-        System.out.println("ADDED: ");
-        for (String t: addedTags){
-            System.out.println(t);
-        }
-        System.out.println("REMOVED: ");
-        for (String t: removedtags){
-            System.out.println(t);
-        }
+        
 
 
         // INSERT ADDED TAGS
@@ -419,7 +359,6 @@ public class DB {
 
                 // bind id's and tag names
                 for (String t: addedTags){
-                    System.out.println(t);
                     st.setInt(paramCount, id);
                     paramCount ++;
                     st.setString(paramCount, t);

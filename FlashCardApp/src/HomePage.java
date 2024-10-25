@@ -1,19 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class HomePage extends JPanel{
-    private UIController controller;
+    private Controller controller;
 
     private JList<String> setsList;
     private JList<String> tagsList;
     private JList<String> cardsList;
     private JTextField keywordInput;
-    private JRadioButton randomRadio;
+    private JRadioButton byKnowledgeRadio;
 
 
-    HomePage(UIController c){
+    HomePage(Controller c){
         controller = c;
 
         setLayout(new GridBagLayout());
@@ -22,7 +21,7 @@ public class HomePage extends JPanel{
         // Sets label
         JLabel setsLabel = new JLabel("Sets:");
 
-        GridBagConstraints setsLabelGBC = UIController.getGBC(0, 0);
+        GridBagConstraints setsLabelGBC = Controller.getGBC(0, 0);
         add(setsLabel, setsLabelGBC);
         
         // sets input
@@ -30,7 +29,7 @@ public class HomePage extends JPanel{
         setsList = new JList<String>();    
         JScrollPane setsListPanel = new JScrollPane(setsList);  
 
-        GridBagConstraints setsGBC = UIController.getGBC(0, 1, 1, 0.5);
+        GridBagConstraints setsGBC = Controller.getGBC(0, 1, 1, 0.5);
         setsGBC.fill = GridBagConstraints.BOTH;
         add(setsListPanel, setsGBC);
 
@@ -38,14 +37,14 @@ public class HomePage extends JPanel{
         // Tags label
         JLabel tagsLabel = new JLabel("Tags:");
 
-        GridBagConstraints tagsLabelGBC = UIController.getGBC(1, 0);
+        GridBagConstraints tagsLabelGBC = Controller.getGBC(1, 0);
         add(tagsLabel, tagsLabelGBC);
         
         // tags input
         tagsList = new JList<String>();      
         JScrollPane tagsListPanel = new JScrollPane(tagsList);  
 
-        GridBagConstraints tagsGBC = UIController.getGBC(1, 1, 1, 0.5);
+        GridBagConstraints tagsGBC = Controller.getGBC(1, 1, 1, 0.5);
         tagsGBC.fill = GridBagConstraints.BOTH;
         add(tagsListPanel, tagsGBC);
 
@@ -54,13 +53,13 @@ public class HomePage extends JPanel{
         // keyword label
         JLabel keywordLabel = new JLabel("Keyword:");
 
-        GridBagConstraints keywordLabelGBC = UIController.getGBC(0, 2);
+        GridBagConstraints keywordLabelGBC = Controller.getGBC(0, 2);
         add(keywordLabel, keywordLabelGBC);
         
         // keyword input
         keywordInput = new JTextField();        
 
-        GridBagConstraints keywordInputGBC = UIController.getGBC(0, 3, 1,0);
+        GridBagConstraints keywordInputGBC = Controller.getGBC(0, 3, 1,0);
         keywordInputGBC.gridwidth = 2;
         add(keywordInput, keywordInputGBC);
 
@@ -68,7 +67,7 @@ public class HomePage extends JPanel{
         // apply button
         JButton applyButton = new JButton("Apply Filters");        
 
-        GridBagConstraints applyButtonGBC = UIController.getGBC(0, 4, 1,0);
+        GridBagConstraints applyButtonGBC = Controller.getGBC(0, 4, 1,0);
         add(applyButton, applyButtonGBC);
 
         // apply button click action listener
@@ -78,7 +77,7 @@ public class HomePage extends JPanel{
         // clear button
         JButton clearButton = new JButton("Clear Filters");        
 
-        GridBagConstraints clearButtonGBC = UIController.getGBC(1, 4, 1,0);
+        GridBagConstraints clearButtonGBC = Controller.getGBC(1, 4, 1,0);
         add(clearButton, clearButtonGBC);
 
         // clear button click action listener
@@ -90,7 +89,7 @@ public class HomePage extends JPanel{
         JScrollPane cardsPane = new JScrollPane(cardsList);
 
         // cards gbc
-        GridBagConstraints tableGBC = UIController.getGBC(0, 5, 1, 1);
+        GridBagConstraints tableGBC = Controller.getGBC(0, 5, 1, 1);
         tableGBC.fill = GridBagConstraints.BOTH;
         tableGBC.gridwidth = 2;
         add(cardsPane, tableGBC);
@@ -103,7 +102,7 @@ public class HomePage extends JPanel{
         // New card button
         JButton newButton = new JButton("Add New Card");        
 
-        GridBagConstraints newButtonGBC = UIController.getGBC(0, 6, 1,0);
+        GridBagConstraints newButtonGBC = Controller.getGBC(0, 6, 1,0);
         newButtonGBC.gridwidth = 2;
         add(newButton, newButtonGBC);
 
@@ -114,7 +113,7 @@ public class HomePage extends JPanel{
         // order radio buttons
         JPanel orderPanel = new JPanel();
 
-        GridBagConstraints orderPanelGBC = UIController.getGBC(0, 7, 1, 0);
+        GridBagConstraints orderPanelGBC = Controller.getGBC(0, 7, 1, 0);
         orderPanelGBC.gridwidth = 2;
         add(orderPanel, orderPanelGBC);
 
@@ -122,27 +121,25 @@ public class HomePage extends JPanel{
 
         ButtonGroup orderBG = new ButtonGroup();
 
-        JRadioButton knowledgeRadio = new JRadioButton("Order by Knowledge");
-        knowledgeRadio.setSelected(true);
-        orderBG.add(knowledgeRadio);
-        orderPanel.add(knowledgeRadio);
+        byKnowledgeRadio = new JRadioButton("Order by Knowledge");
+        orderBG.add(byKnowledgeRadio);
+        orderPanel.add(byKnowledgeRadio);
 
-        randomRadio = new JRadioButton("Order Randomly");
-        orderBG.add(randomRadio);
-        orderPanel.add(randomRadio);
-
+        JRadioButton randomlyRadio = new JRadioButton("Order Randomly");
+        orderBG.add(randomlyRadio);
+        orderPanel.add(randomlyRadio);
 
 
         // study button
         JButton studyButton = new JButton("Study These Cards");        
 
-        GridBagConstraints studyButtonGBC = UIController.getGBC(0, 8, 1,0);
+        GridBagConstraints studyButtonGBC = Controller.getGBC(0, 8, 1,0);
         studyButtonGBC.gridwidth = 2;
         add(studyButton, studyButtonGBC);
 
         studyButton.addActionListener(studyAllClickedListener);
 
-        resetPage();
+        resetAndReloadCards();
 
         // set layout
         setSize(400, 300);
@@ -150,58 +147,38 @@ public class HomePage extends JPanel{
 
     }
 
+    // PAGE/CARD UPDATE FUNCS
 
+    // reloads all current card titles and their sets
     public void reloadCards(){
+        String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
+        String[] sets = setsList.getSelectedValuesList().toArray(new String[setsList.getSelectedIndices().length]);
+        
+        controller.loadCardHeaders(tags,sets, keywordInput.getText(), byKnowledgeRadio.isSelected());
+
         cardsList.setListData(controller.getCurrentCardTitlesWithSets());
     }
-    
 
-    // apply button click
-    public ArrayList<String> getAllCards(){
-        return new ArrayList<String>();
-    }
-
-    public ActionListener applyClickedListener = new ActionListener() {
-        public void actionPerformed(ActionEvent e){
-            String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
-            String[] sets = setsList.getSelectedValuesList().toArray(new String[setsList.getSelectedIndices().length]);
-            
-            controller.loadFilteredCardHeaders(tags,sets, keywordInput.getText());
-            reloadCards();
-        }
-    };
-
-
-    // clear button click
-
-    public ActionListener clearClickedListener = new ActionListener() {
-        public void actionPerformed(ActionEvent e){
-            resetPage();
-        }
-    };
-
-
-    public void resetInputs(){
+    // reset filters and reload cards
+    public void resetAndReloadCards(){
         tagsList.setListData(controller.getTags());
         setsList.setListData(controller.getSets());
-        keywordInput.setText("");
-    }
+        byKnowledgeRadio.setSelected(true);
 
-    public void resetPage(){
-        resetInputs();
-        controller.loadCardHeaders();
+        keywordInput.setText("");
         reloadCards();
     }
 
-    // new button clicked listener
+    // EVENT LISTENERS
+
+    // New button click listener
     public ActionListener newClickedListener = new ActionListener() {
         public void actionPerformed(ActionEvent e){
             controller.addNewCard();
         }
     };
 
-
-    // card list item clicked listener
+    // card double-click listener
     MouseAdapter cardClickedListener = new MouseAdapter() {
         public void mouseClicked(MouseEvent e){
             if (e.getClickCount() == 2 ){
@@ -210,24 +187,35 @@ public class HomePage extends JPanel{
         }
     };
 
-    // delete key pressed - delete selected cards
+    // Delete key pressed - delete selected cards
     KeyAdapter deleteKeyListener = new KeyAdapter() {
         public void keyPressed(KeyEvent e){
             if (e.getKeyCode() == KeyEvent.VK_DELETE){
                 controller.deleteCardsAtIndices(cardsList.getSelectedIndices());
-                resetPage();
+                resetAndReloadCards();
             }
         };
     };
-    
 
+    // Apply button click listener - get selected filters and display filtered cards
+    public ActionListener applyClickedListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            reloadCards();
+        }
+    };
 
+    // Clear button click listener - reset page
+    public ActionListener clearClickedListener = new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            resetAndReloadCards();
+        }
+    };
+
+    // Study button click listener - reset page
     public ActionListener studyAllClickedListener = new ActionListener() {
         public void actionPerformed(ActionEvent e){
-            String[] tags = tagsList.getSelectedValuesList().toArray(new String[tagsList.getSelectedIndices().length]);
-            String[] sets = setsList.getSelectedValuesList().toArray(new String[setsList.getSelectedIndices().length]);
-            controller.loadFilteredCards(tags,sets, keywordInput.getText(), randomRadio.isSelected());
             
+            reloadCards();
             controller.switchToLearn();
             
         }

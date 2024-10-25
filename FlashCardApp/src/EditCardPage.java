@@ -6,20 +6,20 @@ import javax.swing.*;
 
 public class EditCardPage extends JPanel{
     
-    private UIController controller;
+    private Controller controller;
     private EditCardPropertiesPanel sidePanel;
     private EditCardContentPanel cardsPanel;
     
     JFrame f;
 
-    EditCardPage(UIController c){
+    EditCardPage(Controller c){
         controller = c;
         setLayout(new GridBagLayout());
 
         // quit button
         JButton quitButton = new JButton("Quit");
 
-        GridBagConstraints quitGBC = UIController.getGBC(0, 0);
+        GridBagConstraints quitGBC = Controller.getGBC(0, 0);
         quitGBC.anchor = GridBagConstraints.LINE_START;
         quitGBC.fill = GridBagConstraints.NONE;
         add(quitButton, quitGBC);
@@ -39,7 +39,7 @@ public class EditCardPage extends JPanel{
         cardsPanel = new EditCardContentPanel();
 
         JTabbedPane tabbedPane = new JTabbedPane();
-        GridBagConstraints gbc = UIController.getGBC(0,1, 1, 1);
+        GridBagConstraints gbc = Controller.getGBC(0,1, 1, 1);
         gbc.fill = GridBagConstraints.BOTH;
 
         tabbedPane.add("Properties", sidePanel);
@@ -51,7 +51,7 @@ public class EditCardPage extends JPanel{
          // save button
          JButton saveButton = new JButton("Save");
 
-         GridBagConstraints saveGBC = UIController.getGBC(0, 2);
+         GridBagConstraints saveGBC = Controller.getGBC(0, 2);
          add(saveButton, saveGBC);
          
          // save button click action listener

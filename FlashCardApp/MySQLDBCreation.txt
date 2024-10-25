@@ -32,10 +32,11 @@ CREATE TABLE CardTags (
 ------------------------------------------------------
 
 
-update 25/10
+update 25/10:
+
+
 DROP TABLE CardTags;
 DROP TABLE Tags;
-
 
 CREATE TABLE CardTags(
 	CardID int,

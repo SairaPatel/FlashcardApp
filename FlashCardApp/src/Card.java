@@ -9,30 +9,7 @@ public class Card {
 
     private float rating;
 
-    // not used yet?
-    Card(int ID, String t, String s, String[] tags, String f, String b, float r){
-        this.id = ID;
-        title = t;
-        front = f;
-        back = b;
-        set = s;
-        rating = r;
-        this.tags = tags;
-    }
-
-    // check if actually needed?
-    Card(int ID, String t, String s, String f, String b, float r) {
-        // title = t;
-        // front = f;
-        // back = b;
-        // set = s;
-        // rating = r;
-        this.id = ID;
-        setProperties(t, s, f, b, r);
-        tags = new String[0]; 
-    }
-
-    // used this
+    // constructors
     Card(int ID, String t, String s){
         this.id= ID;
         title = t;
@@ -45,6 +22,7 @@ public class Card {
         this.id = id;
     }
 
+    // setters
     public void updateRating(int val){
         if (rating == -1){
             rating = val;

@@ -22,7 +22,7 @@ public class LearnCardPanel extends JPanel{
         // Title label
         titleLabel = new JLabel("Title of card", SwingConstants.CENTER);
         
-        GridBagConstraints titleLabelGBC = UIController.getGBC(0, 0);
+        GridBagConstraints titleLabelGBC = Controller.getGBC(0, 0);
         titleLabelGBC.gridwidth = 2;
         add(titleLabel, titleLabelGBC);
         
@@ -34,7 +34,7 @@ public class LearnCardPanel extends JPanel{
         frontContent.setLineWrap(true);
         JScrollPane frontPane = new JScrollPane(frontContent);
 
-        GridBagConstraints frontGBC = UIController.getGBC(0, 1, 1, 1);
+        GridBagConstraints frontGBC = Controller.getGBC(0, 1, 1, 1);
         frontGBC.gridwidth = 2;
         frontGBC.fill = GridBagConstraints.BOTH;
         add(frontPane, frontGBC);
@@ -48,7 +48,7 @@ public class LearnCardPanel extends JPanel{
         backContentPanel = new JScrollPane(backContent);
         backContentPanel.setVisible(false);
         
-        GridBagConstraints backGBC = UIController.getGBC(0, 3, 1,1);
+        GridBagConstraints backGBC = Controller.getGBC(0, 3, 1,1);
         backGBC.fill = GridBagConstraints.BOTH;
         add(backContentPanel, backGBC);
         
@@ -56,7 +56,7 @@ public class LearnCardPanel extends JPanel{
         // answer label 
         JLabel answerLabel = new JLabel("What you know:", SwingConstants.CENTER);
         
-        GridBagConstraints answerLabelGBC = UIController.getGBC(1, 2);
+        GridBagConstraints answerLabelGBC = Controller.getGBC(1, 2);
         answerLabelGBC.anchor = GridBagConstraints.CENTER;
         answerLabelGBC.fill = GridBagConstraints.NONE;
         add(answerLabel, answerLabelGBC);
@@ -67,7 +67,7 @@ public class LearnCardPanel extends JPanel{
         JScrollPane inputPane = new JScrollPane(userInput);
 
 
-        GridBagConstraints userInputGBC = UIController.getGBC(1, 3, 1, 1);
+        GridBagConstraints userInputGBC = Controller.getGBC(1, 3, 1, 1);
         userInputGBC.fill = GridBagConstraints.BOTH;
         add(inputPane, userInputGBC);
 
@@ -75,7 +75,7 @@ public class LearnCardPanel extends JPanel{
         // reveal back button
         revealButton = new JToggleButton("Show Content");
                 
-        GridBagConstraints revealButtonGBC = UIController.getGBC(0, 4);
+        GridBagConstraints revealButtonGBC = Controller.getGBC(0, 4);
         revealButtonGBC.gridwidth = 2;
 
         revealButton.addItemListener(new ItemListener() {
@@ -98,7 +98,7 @@ public class LearnCardPanel extends JPanel{
         // rating label
         JLabel ratingLabel = new JLabel("Do you know it?", SwingConstants.CENTER);
         
-        GridBagConstraints ratingLabelGBC = UIController.getGBC(0, 5);
+        GridBagConstraints ratingLabelGBC = Controller.getGBC(0, 5);
         ratingLabelGBC.anchor = GridBagConstraints.PAGE_END;
         ratingLabelGBC.gridwidth = 2;
         add(ratingLabel, ratingLabelGBC);
@@ -106,7 +106,7 @@ public class LearnCardPanel extends JPanel{
         // rating input pane
         JPanel ratingPanel = new JPanel();
 
-        GridBagConstraints ratingPanelGBC = UIController.getGBC(0, 6, 1, 0);
+        GridBagConstraints ratingPanelGBC = Controller.getGBC(0, 6, 1, 0);
         ratingPanelGBC.gridwidth = 2;
         add(ratingPanel, ratingPanelGBC);
 
@@ -135,7 +135,6 @@ public class LearnCardPanel extends JPanel{
         userInput.setText("");
 
         ratingButtons[(int)rating].setSelected(true);
-        System.out.println(rating);
 
         revealButton.setText("Show Content");
         backContentPanel.setVisible(false);

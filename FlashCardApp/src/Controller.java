@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class UIController {
+public class Controller {
 
     private int currentCardIndex;
     private ArrayList<Card> cards;
@@ -14,17 +14,22 @@ public class UIController {
     private CardLayout cardLayout;
     private JPanel root;
 
-    public UIController(CardLayout c, JPanel r){
+    public Controller(CardLayout c, JPanel r){
         cardLayout = c;
         root = r;
 
         currentCardIndex = 0;
-
-        loadCardHeaders();
     }
+
+    public void setPages(HomePage home, EditCardPage edit, LearnPage learn){
+        homePage = home;
+        editPage = edit;
+        learnPage = learn;
+    }
+
     public void switchToHome(){
         currentCardIndex = 0;
-        homePage.resetPage();
+        homePage.resetAndReloadCards();
         cardLayout.show( root,"home");
     }
 
@@ -40,26 +45,28 @@ public class UIController {
         cardLayout.show( root,"learn");
     }
 
-    public void loadCardHeaders(){
-        // select all card titles, sets, tags and ids
-        cards = DB.getAllCards();
+    public int getCurrentIndex(){
+        return currentCardIndex;
     }
 
-
-    public void setPages(HomePage home, EditCardPage edit, LearnPage learn){
-        homePage = home;
-        editPage = edit;
-        learnPage = learn;
+    public int getCurrentCardsLength(){
+        return cards.size();
     }
+
+    // switch current card index to next card. 
+    public void nextCardIndex(){
+        currentCardIndex += 1;
+    }
+
+    public Card getCurrentCard(){
+        return cards.get(currentCardIndex);
+    }
+    
 
     public void loadCurrentCardProperties(){
         cards.set(currentCardIndex, DB.getCardProperties(getCurrentCard().getID()));
     }
 
-
-    public Card getCurrentCard(){
-        return cards.get(currentCardIndex);
-    }
 
 
     // home page  - get sets
@@ -81,50 +88,45 @@ public class UIController {
         return titles;
     }
     
-    // home page - set filtered current cards for displaying (titles,sets,ids only)
-    public void loadFilteredCardHeaders(String[] tags, String[] sets, String keyword){
-        cards = DB.getSomeCards(tags, sets, keyword, false);
-    }
 
-    // home page - set filtered current cards for learning(all card properties). ordered by rating or random
-    public void loadFilteredCards(String[] tags, String[] sets, String keyword, boolean orderRandomly){
+    // home page - set filtered current cards for displaying (titles,sets,ids only) - ordered by rating or random
+    public void loadCardHeaders(String[] tags, String[] sets, String keyword, boolean orderByKnowledge){
         //order by rating score or by RAND()
-        cards = DB.getSomeCards(tags, sets, keyword, orderRandomly);
+        cards = DB.getSomeCards(tags, sets, keyword, orderByKnowledge);
         
     }
 
-    // insert new card and switch to edit page
-    public void addNewCard(){
-        int id = DB.insertCard();
-
-        Card c = DB.getCard(id);
-
-        cards = new ArrayList<Card>();
-        cards.add(c);
-        System.out.println(c.toString());
-        switchToEdit();
-        
-    }
-
+    // delete cards at selected indices in Cards list
     public void deleteCardsAtIndices(int[] indices){
         
         // get card IDs
         int[] ids = new int[indices.length];
-
+        
         for (int j = 0; j< ids.length; j ++){
             ids[j] = cards.get(indices[j]).getID();
         }
 
         // delete cards
-        DB.deleteCards(ids);
-        
+        DB.deleteCards(ids);        
+    }
+
+
+    // insert new card and switch to edit page
+    public void addNewCard(){
+
+        int id = DB.insertCard();
+        Card c = DB.getCard(id);
+
+        cards = new ArrayList<Card>();
+        cards.add(c);
+
+        switchToEdit();
         
     }
 
-    
-    // home page click card
+
+    // load card at selected index and switch to edit page
     public void editCardAtIndex(int index){
-        
 
         Card c = DB.getCard(cards.get(index).getID());
 
@@ -135,15 +137,13 @@ public class UIController {
     }
 
 
-    // save current edit card
+    // save edits for current card
     public void updateCard(String title, String set, ArrayList<String> addedTags, ArrayList<String> removedTags, String front, String back){
         DB.updateCard(getCurrentCard().getID(), title, set, addedTags, removedTags, front, back);
         
     }
 
-    
-
-    //update card rating
+    // update card rating
     public void updateCurrentCardRating(int rating){
         Card currentCard = getCurrentCard();
         // FIX THIS FORMULA _--------------------------------------------------------------
@@ -151,21 +151,12 @@ public class UIController {
         DB.setCardRating(currentCard.getID(), newRating);
     }
 
-    // switch current card to next card. 
-    public void nextCardIndex(){
-        
-        currentCardIndex += 1;
-
-    }
-
-    public int getCurrentIndex(){
-        return currentCardIndex;
-    }
-
-    public int getCurrentCardsLength(){
-        return cards.size();
-    }
+    
    
+
+    // UI HELPER METHODS: 
+
+
     /**
      * Returns a GridBagConstraints object with: ipadx = 2 ipady = 2, weightx and weighty = 0.
      * And gridx, gridy, values specified by params
