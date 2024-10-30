@@ -185,11 +185,7 @@ public class EditCardPropertiesPanel extends JPanel{
         
         return setInput.getSelectedItem().toString();
     }
-    // public String[] getTags(){
-    //     String[] ts = new String[tagsListModel.size()];
-    //     tagsListModel.copyInto(ts);
-    //     return ts;
-    // }
+    
 
     public ArrayList<String> getAddedTags(){
         return addedTags;

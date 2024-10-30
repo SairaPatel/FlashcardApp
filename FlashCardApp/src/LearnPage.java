@@ -12,7 +12,7 @@ public class LearnPage extends JPanel{
     private JButton nextButton;
 
     LearnPage(Controller c){
-        controller =c;
+        controller = c;
         
         setLayout(new GridBagLayout());
 

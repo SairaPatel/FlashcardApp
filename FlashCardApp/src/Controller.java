@@ -146,7 +146,6 @@ public class Controller {
     // update card rating
     public void updateCurrentCardRating(int rating){
         Card currentCard = getCurrentCard();
-        // FIX THIS FORMULA _--------------------------------------------------------------
         float newRating = (rating + currentCard.getRating())/2;
         DB.setCardRating(currentCard.getID(), newRating);
     }

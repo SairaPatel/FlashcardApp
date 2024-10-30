@@ -64,10 +64,10 @@ public class HomePage extends JPanel{
         add(keywordInput, keywordInputGBC);
 
 
-        // apply button
-        JButton applyButton = new JButton("Apply Filters");        
+        // View cards (apply filters) button
+        JButton applyButton = new JButton("View Cards");        
 
-        GridBagConstraints applyButtonGBC = Controller.getGBC(0, 4, 1,0);
+        GridBagConstraints applyButtonGBC = Controller.getGBC(0, 5, 1,0);
         add(applyButton, applyButtonGBC);
 
         // apply button click action listener
@@ -77,7 +77,7 @@ public class HomePage extends JPanel{
         // clear button
         JButton clearButton = new JButton("Clear Filters");        
 
-        GridBagConstraints clearButtonGBC = Controller.getGBC(1, 4, 1,0);
+        GridBagConstraints clearButtonGBC = Controller.getGBC(1, 5, 1,0);
         add(clearButton, clearButtonGBC);
 
         // clear button click action listener
@@ -89,7 +89,7 @@ public class HomePage extends JPanel{
         JScrollPane cardsPane = new JScrollPane(cardsList);
 
         // cards gbc
-        GridBagConstraints tableGBC = Controller.getGBC(0, 5, 1, 1);
+        GridBagConstraints tableGBC = Controller.getGBC(0, 6, 1, 1);
         tableGBC.fill = GridBagConstraints.BOTH;
         tableGBC.gridwidth = 2;
         add(cardsPane, tableGBC);
@@ -102,7 +102,7 @@ public class HomePage extends JPanel{
         // New card button
         JButton newButton = new JButton("Add New Card");        
 
-        GridBagConstraints newButtonGBC = Controller.getGBC(0, 6, 1,0);
+        GridBagConstraints newButtonGBC = Controller.getGBC(0, 7, 1,0);
         newButtonGBC.gridwidth = 2;
         add(newButton, newButtonGBC);
 
@@ -113,7 +113,7 @@ public class HomePage extends JPanel{
         // order radio buttons
         JPanel orderPanel = new JPanel();
 
-        GridBagConstraints orderPanelGBC = Controller.getGBC(0, 7, 1, 0);
+        GridBagConstraints orderPanelGBC = Controller.getGBC(0, 4, 1, 0);
         orderPanelGBC.gridwidth = 2;
         add(orderPanel, orderPanelGBC);
 
@@ -217,7 +217,10 @@ public class HomePage extends JPanel{
         public void actionPerformed(ActionEvent e){
             
             reloadCards();
-            controller.switchToLearn();
+
+            if (controller.getCurrentCardsLength() > 0){
+                controller.switchToLearn();
+            }
             
         }
     };
