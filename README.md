@@ -112,10 +112,11 @@ CREATE TABLE CardTags(
 ## Possible Future Changes ##
 
 - Add ability to change filter mode from using AND to OR (at the moment the default is AND. i.e. all filters must apply for a card to be part of the results)
-- Make _knowledge rating_ more visible to user
+- Changes to _knowledge rating_:
   - Display the rating of each card on the home page
   - Add an additional filter for knowledge rating
   - Maybe colour code ratings/add a progress bar to allow more visualisation of the knowledge level/progress of a card
   - Add a progress bar/score to indicate the collective knowledge level of the currently displayed/filtered cards
+  - Change the formula for ratings to consider the time since the card was last studied (rated)
 
 
